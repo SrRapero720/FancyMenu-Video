@@ -57,7 +57,7 @@ public class EventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onScreenInitPre(ScreenEvent.InitScreenEvent.Pre e) {
+    public void onScreenInitPre(ScreenEvent.Init.Pre e) {
 
         if (!ButtonCache.isCaching()) {
             if (MenuCustomization.isValidScreen(e.getScreen())) {
@@ -127,11 +127,11 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void onDrawScreenPost(ScreenEvent.DrawScreenEvent.Post e) {
+    public void onDrawScreenPost(ScreenEvent.Render.Pre e) {
 
         if (e.getScreen() instanceof FMConfigScreen) {
 
-            this.openSettingsButton.render(e.getPoseStack(), e.getMouseX(), e.getMouseY(), e.getPartialTicks());
+            this.openSettingsButton.render(e.getPoseStack(), e.getMouseX(), e.getMouseY(), e.getPartialTick());
 
         }
 

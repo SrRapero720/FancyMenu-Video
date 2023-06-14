@@ -15,7 +15,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = '1.0.0'
 group = 'de.keksuccino'
-archivesBaseName = 'fmextension_video'
+archivesBaseName = 'fmextension_video_watermedia'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 compileJava {
@@ -26,10 +26,11 @@ println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getPro
 
 minecraft {
 
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'official', version: '1.19.2'
 
     runs {
         client {
+            taskName "FM-Video 1.19.2"
             workingDirectory project.file('run')
             //arg "-mixin.config=fancymenu.general.mixin.json"
         }
@@ -51,11 +52,12 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.0.2'
+    minecraft 'net.minecraftforge:forge:1.19.2-43.2.14'
 
 
-    implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503129")
-    implementation fg.deobf("curse.maven:konkrete-410295:4514906")
+
+    implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503132")
+    implementation fg.deobf("curse.maven:konkrete-410295:4514910")
     implementation fg.deobf("curse.maven:watermedia-869524:4583242")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
