@@ -20,14 +20,11 @@ import java.nio.IntBuffer;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class VideoRenderer {
-
     private static final Logger LOGGER = LogManager.getLogger("fmvideo/VideoRenderer");
-
     protected String mediaPath;
     protected VideoLanPlayer player;
     private final ReentrantLock lock = new ReentrantLock();
     protected int texture;
-
 
     // Texture data
     private volatile int width = 1;
@@ -69,7 +66,7 @@ public class VideoRenderer {
         });
 
         if (this.player.getRawPlayer() != null) {
-            this.player.start(mediaPathOrLink);
+            if (!this.player.isValid()) this.player.start(mediaPathOrLink);
         } else {
             LOGGER.error("ERROR: Unable to initialize player for media: " + this.mediaPath);
         }
