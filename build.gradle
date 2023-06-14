@@ -10,7 +10,6 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
@@ -40,20 +39,23 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
-
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
+    jcenter()
+    mavenCentral()
+    maven { url "https://repo.spongepowered.org/maven" }
+    maven { url "https://maven.tterrag.com/" }
+    maven {
+        url "https://www.cursemaven.com"
+        content { includeGroup "curse.maven" }
+    }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-
     minecraft 'net.minecraftforge:forge:1.18.2-40.0.2'
-	
-	implementation fileTree('libs') { include '*.jar' }
+
+
+    implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503129")
+    implementation fg.deobf("curse.maven:watermedia-869524:4583242")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
