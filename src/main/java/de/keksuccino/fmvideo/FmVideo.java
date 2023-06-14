@@ -2,6 +2,7 @@ package de.keksuccino.fmvideo;
 
 import java.io.File;
 
+import com.sun.org.slf4j.internal.LoggerFactory;
 import de.keksuccino.fancymenu.api.background.MenuBackgroundTypeRegistry;
 import de.keksuccino.fancymenu.api.buttonaction.ButtonActionRegistry;
 import de.keksuccino.fancymenu.api.item.CustomizationItemRegistry;
@@ -15,6 +16,7 @@ import de.keksuccino.fmvideo.video.VideoVolumeHandler;
 import de.keksuccino.konkrete.localization.Locals;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
 import de.keksuccino.konkrete.Konkrete;
 import de.keksuccino.konkrete.config.Config;
@@ -24,8 +26,7 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sun.org.slf4j.internal.Logger;
 
 @Mod("fmextension_video")
 public class FmVideo {
@@ -45,9 +46,6 @@ public class FmVideo {
             //For real, what even is this cursed piece of code?
             //Who thinks of an easy way to set mods to client/server only and this comes to their mind???
             ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-
-            //Check if mod was loaded client- or server-side
-            if (FMLEnvironment.dist == Dist.CLIENT) {
 
                 if (!MOD_DIR.exists()) {
                     MOD_DIR.mkdirs();

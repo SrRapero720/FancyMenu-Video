@@ -1,16 +1,13 @@
 package de.keksuccino.fmvideo.video;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import de.keksuccino.konkrete.rendering.RenderUtils;
+import de.keksuccino.fmvideo.util.MemoryTracker;
 import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.BufferFormat;
 import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
 import me.srrapero720.watermedia.api.media.players.VideoLanPlayer;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.AbstractGui;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -38,7 +35,7 @@ public class VideoRenderer {
     protected int baseVolume = 100;
 
     public VideoRenderer(String mediaPathOrLink) {
-        this.texture = GlStateManager._genTexture();
+        this.texture = GlStateManager.genTexture();
         this.mediaPath = mediaPathOrLink;
         this.player = new VideoLanPlayer((mediaPlayer, nativeBuffers, bufferFormat) -> {
             lock.lock();
@@ -78,9 +75,9 @@ public class VideoRenderer {
         lock.lock();
         try {
             if (needsUpdate) {
-                GlStateManager._pixelStore(3314, 0);
-                GlStateManager._pixelStore(3316, 0);
-                GlStateManager._pixelStore(3315, 0);
+                GlStateManager.pixelStore(3314, 0);
+                GlStateManager.pixelStore(3316, 0);
+                GlStateManager.pixelStore(3315, 0);
                 RenderSystem.bindTexture(texture);
                 if (first) {
                     GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
@@ -94,7 +91,7 @@ public class VideoRenderer {
         }
     }
 
-    public void render(PoseStack matrix, int posX, int posY, int width, int height) {
+    public void render(MatrixStack matrix, int posX, int posY, int width, int height) {
         if (player == null || player.getRawPlayer() == null) return;
 
         try {
@@ -105,12 +102,8 @@ public class VideoRenderer {
                 RenderSystem.enableBlend();
                 RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
                 AbstractGui.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
-                RenderSystem.setShaderTexture(0, texture);
                 RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-//                RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
+//                RenderSystem.setShader(GameRenderer::getOverlayTexture);
                 RenderSystem.disableBlend();
             }
 
@@ -220,10 +213,6 @@ public class VideoRenderer {
         return this.mediaPath;
     }
 
-    public int getPlayerId() {
-        return this.playerId;
-    }
-
     @Nullable
     public Dimension getVideoDimension() {
         if (this.player != null && this.player.getRawPlayer() != null) {
@@ -239,7 +228,7 @@ public class VideoRenderer {
     public void destroy() {
         if (this.player != null) {
             this.stop();
-            if (texture != -1) GlStateManager._deleteTexture(texture);
+            if (texture != -1) GlStateManager.deleteTexture(texture);
             if (player.getRawPlayer() != null) {
                 this.player.release();
             }

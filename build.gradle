@@ -25,11 +25,10 @@ compileJava {
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-
-    mappings channel: 'official', version: '1.16.5'
-
+    mappings channel: 'snapshot', version: '20210309-1.16.5'
     runs {
         client {
+            taskName "FM-Video 1.16.5"
             workingDirectory project.file('run')
             //arg "-mixin.config=fancymenu.general.mixin.json"
         }
@@ -54,9 +53,9 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.0.1'
 
 
-    implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503129")
-    implementation fg.deobf("curse.maven:konkrete-410295:4514906")
-    implementation fg.deobf("curse.maven:watermedia-869524:4583242")
+    implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503125")
+    implementation fg.deobf("curse.maven:konkrete-410295:4514901")
+    implementation fg.deobf(files("libs/watermedia-1.1.1.jar"))
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
