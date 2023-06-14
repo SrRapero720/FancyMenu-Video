@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.keksuccino.fmvideo.util.GuiComponent;
 import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.BufferFormat;
 import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
 import me.srrapero720.watermedia.api.media.players.VideoLanPlayer;
@@ -105,7 +106,7 @@ public class VideoRenderer {
 //                RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                S.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
+                GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
                 RenderSystem.disableBlend();
             }
 

@@ -16,6 +16,7 @@ import de.keksuccino.konkrete.input.StringUtils;
 import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.math.MathUtils;
 import de.keksuccino.konkrete.properties.PropertiesSection;
+import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -112,7 +113,7 @@ public class VideoLayoutEditorElement extends LayoutEditorElement {
             }
         }) {
             @Override
-            public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            public void render(GuiGraphics matrixStack, int mouseX, int mouseY, float partialTicks) {
                 if (i.looping) {
                     this.setMessage(Locals.localize("fancymenu.fmvideo.item.options.loop.on"));
                 } else {

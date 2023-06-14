@@ -20,6 +20,7 @@ import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.math.MathUtils;
 import de.keksuccino.konkrete.properties.PropertiesSection;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.awt.*;
@@ -143,7 +144,7 @@ public class SetVideoPopup extends FMPopup {
     }
 
     @Override
-    public void render(PoseStack matrix, int mouseX, int mouseY, Screen renderIn) {
+    public void render(GuiGraphics matrix, int mouseX, int mouseY, Screen renderIn) {
         super.render(matrix, mouseX, mouseY, renderIn);
 
         int xCenter = renderIn.width / 2;
@@ -164,7 +165,7 @@ public class SetVideoPopup extends FMPopup {
                 }
                 pathString = Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.local.selected", s);
             }
-            drawCenteredString(matrix, Minecraft.getInstance().font, pathString, xCenter, yCenter - 30, -1);
+//            drawCenteredString(matrix, Minecraft.getInstance().font, pathString, xCenter, yCenter - 30, -1);
 
             this.chooseVideoButton.visible = true;
             this.chooseVideoButton.setX(xCenter - (this.chooseVideoButton.getWidth() / 2));
@@ -173,7 +174,7 @@ public class SetVideoPopup extends FMPopup {
         }
         if (selected.equals(Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online"))) {
 
-            drawCenteredString(matrix, Minecraft.getInstance().font, Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online.enterlink"), xCenter, yCenter - 30, -1);
+//            drawCenteredString(matrix, Minecraft.getInstance().font, Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online.enterlink"), xCenter, yCenter - 30, -1);
 
             this.linkInputField.setX(xCenter - (this.linkInputField.getWidth() / 2));
             this.linkInputField.setY(yCenter -15);

@@ -15,6 +15,7 @@ import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.math.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Arrays;
@@ -60,7 +61,7 @@ public class VideoPropertiesPopup extends FMPopup {
             }
         }) {
             @Override
-            public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            public void render(GuiGraphics matrixStack, int mouseX, int mouseY, float partialTicks) {
                 if (props.looping) {
                     this.setMessage(Locals.localize("fancymenu.fmvideo.videoproperties.option.enabled"));
                 } else {
@@ -78,7 +79,7 @@ public class VideoPropertiesPopup extends FMPopup {
     }
 
     @Override
-    public void render(PoseStack matrix, int mouseX, int mouseY, Screen renderIn) {
+    public void render(GuiGraphics matrix, int mouseX, int mouseY, Screen renderIn) {
 
         super.render(matrix, mouseX, mouseY, renderIn);
 
@@ -94,7 +95,7 @@ public class VideoPropertiesPopup extends FMPopup {
 
         //Loop
         String loopString = Locals.localize("fancymenu.fmvideo.videoproperties.loop");
-        drawString(matrix, font, loopString, xCenter - font.width(loopString) - 10, yCenter - 19, -1);
+//        drawString(matrix, font, loopString, xCenter - font.width(loopString) - 10, yCenter - 19, -1);
 
         this.loopButton.setX(xCenter + 10);
         this.loopButton.setY(yCenter - 25);
@@ -102,7 +103,7 @@ public class VideoPropertiesPopup extends FMPopup {
 
         //Volume
         String volumeString = Locals.localize("fancymenu.fmvideo.videoproperties.volume");
-        drawString(matrix, font, volumeString, xCenter - font.width(volumeString) - 10, yCenter + 11, -1);
+//        drawString(matrix, font, volumeString, xCenter - font.width(volumeString) - 10, yCenter + 11, -1);
 
         this.volumeInputField.setX(xCenter + 10);
         this.volumeInputField.setY(yCenter + 5);

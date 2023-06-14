@@ -16,6 +16,7 @@ import de.keksuccino.fmvideo.video.VideoVolumeHandler;
 import de.keksuccino.konkrete.gui.content.AdvancedImageButton;
 import de.keksuccino.konkrete.localization.Locals;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -42,7 +43,7 @@ public class EventHandler {
             Minecraft.getInstance().setScreen(new FmVideoConfigScreen(Minecraft.getInstance().screen));
         }) {
             @Override
-            public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            public void render(GuiGraphics matrixStack, int mouseX, int mouseY, float partialTicks) {
                 this.setDescription(Locals.localize("fancymenu.fmvideo.config"));
                 if (this.isHoveredOrFocused()) {
                     this.setX(-2);
@@ -131,7 +132,7 @@ public class EventHandler {
 
         if (e.getScreen() instanceof FMConfigScreen) {
 
-            this.openSettingsButton.render(e.getPoseStack(), e.getMouseX(), e.getMouseY(), e.getPartialTick());
+            this.openSettingsButton.render(e.getGuiGraphics(), e.getMouseX(), e.getMouseY(), e.getPartialTick());
 
         }
 

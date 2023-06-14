@@ -4,10 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.api.background.MenuBackground;
 import de.keksuccino.fancymenu.api.background.MenuBackgroundType;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
+import de.keksuccino.fmvideo.util.GuiComponent;
 import de.keksuccino.fmvideo.video.VideoHandler;
 import de.keksuccino.fmvideo.video.VideoRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -64,7 +64,7 @@ public class VideoBackground extends MenuBackground {
                 this.backgroundColor = new Color(0, 0, 0);
             }
 
-            GuiGraphics.fill(matrixStack.pose(), 0, 0, screen.width, screen.height, this.backgroundColor.getRGB());
+            GuiComponent.fill(matrixStack.pose(), 0, 0, screen.width, screen.height, this.backgroundColor.getRGB());
 
             if (this.renderer != null) {
                 if (this.renderer.isPlaying() && this.renderer.canPlay()) {
