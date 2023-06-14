@@ -1,46 +1,118 @@
 package de.keksuccino.fmvideo.video;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.ResourceLocation;
-import nick1st.fancyvideo.api.MediaPlayer;
-import nick1st.fancyvideo.api.MediaPlayers;
+import com.mojang.blaze3d.vertex.PoseStack;
+import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.BufferFormat;
+import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
+import me.srrapero720.watermedia.api.media.players.VideoLanPlayer;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.nio.IntBuffer;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class VideoRenderer {
 
+    private static final Logger LOGGER = LogManager.getLogger("fmvideo/VideoRenderer");
+
     protected String mediaPath;
-    protected MediaPlayer player;
-    protected int playerId = MediaPlayer.getNew();
+    protected VideoLanPlayer player;
+    private final ReentrantLock lock = new ReentrantLock();
+    protected int texture;
+
+
+    // Texture data
+    private volatile int width = 1;
+    private volatile int height = 1;
+    private volatile IntBuffer buffer;
+    private volatile boolean first = true;
+    private volatile boolean needsUpdate = false;
 
     protected boolean playing = false;
     protected int baseVolume = 100;
 
-    protected ResourceLocation lastFrame = null;
-
     public VideoRenderer(String mediaPathOrLink) {
-
+        this.texture = GlStateManager._genTexture();
         this.mediaPath = mediaPathOrLink;
-        this.player = MediaPlayers.getPlayer(playerId);
-        this.player.prepare(mediaPathOrLink);
+        this.player = new VideoLanPlayer((mediaPlayer, nativeBuffers, bufferFormat) -> {
+            lock.lock();
+            try {
+                buffer.put(nativeBuffers[0].asIntBuffer());
+                buffer.rewind();
+                needsUpdate = true;
+            } finally {
+                lock.unlock();
+            }
+        }, new UnAllocBufferFormatCallback() {
+            @Override
+            public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
+                lock.lock();
+                try {
+                    width = sourceWidth;
+                    height = sourceHeight;
+                    first = true;
+                    buffer = MemoryTracker.create(sourceWidth * sourceHeight * 4).asIntBuffer();
+                    needsUpdate = true;
+                } finally {
+                    lock.unlock();
+                }
+                return new BufferFormat("RGBA", sourceWidth, sourceHeight, new int[] { sourceWidth * 4 }, new int[] { sourceHeight });
+            }
+        });
+
+        if (this.player.getRawPlayer() != null) {
+            this.player.start(mediaPathOrLink);
+        } else {
+            LOGGER.error("ERROR: Unable to initialize player for media: " + this.mediaPath);
+        }
 
     }
 
-    public void render(MatrixStack matrix, int posX, int posY, int width, int height) {
+    private void prerender() {
+        lock.lock();
+        try {
+            if (needsUpdate) {
+                GlStateManager._pixelStore(3314, 0);
+                GlStateManager._pixelStore(3316, 0);
+                GlStateManager._pixelStore(3315, 0);
+                RenderSystem.bindTexture(texture);
+                if (first) {
+                    GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+                    first = false;
+                } else
+                    GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+                needsUpdate = false;
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void render(PoseStack matrix, int posX, int posY, int width, int height) {
+        if (player == null || player.getRawPlayer() == null) return;
 
         try {
+            this.prerender();
 
-            this.lastFrame = this.player.renderImage();
-
-            if (this.lastFrame != null) {
-                Minecraft.getInstance().textureManager.bindTexture(this.lastFrame);
+            if (texture != -1) {
+                RenderSystem.bindTexture(texture);
                 RenderSystem.enableBlend();
                 RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
                 AbstractGui.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
+                RenderSystem.setShaderTexture(0, texture);
+                RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+                RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
                 RenderSystem.disableBlend();
             }
 
@@ -52,21 +124,27 @@ public class VideoRenderer {
 
     public void play() {
         if (!isPlaying()) {
-            this.playing = true;
-            this.player.playPrepared();
+            if (this.player != null) {
+                this.playing = true;
+                this.player.play();
+            }
         }
     }
 
     public void pause() {
         if (isPlaying()) {
-            this.playing = false;
-            this.player.pause();
+            if (this.player != null) {
+                this.playing = false;
+                this.player.pause();
+            }
         }
     }
 
     public void stop() {
-        this.playing = false;
-        this.player.getTrueMediaPlayer().mediaPlayer().controls().stop();
+        if (this.player != null) {
+            this.playing = false;
+            this.player.stop();
+        }
     }
 
     public boolean isPlaying() {
@@ -74,11 +152,16 @@ public class VideoRenderer {
     }
 
     public void setLooping(boolean b) {
-        this.player.getTrueMediaPlayer().mediaPlayer().controls().setRepeat(b);
+        if (this.player != null) {
+            this.player.setRepeatMode(b);
+        }
     }
 
     public boolean isLooping() {
-        return this.player.getTrueMediaPlayer().mediaPlayer().controls().getRepeat();
+        if (this.player != null) {
+            return this.player.getRepeatMode();
+        }
+        return false;
     }
 
     /**
@@ -88,17 +171,22 @@ public class VideoRenderer {
      * @param volume Value between 0 and 200.
      */
     public void setVolume(int volume) {
-        if (volume < 0) {
-            volume = 0;
+        if (this.player != null) {
+            if (volume < 0) {
+                volume = 0;
+            }
+            if (volume > 200) {
+                volume = 200;
+            }
+            this.player.setVolume(volume);
         }
-        if (volume > 200) {
-            volume = 200;
-        }
-        this.player.volume(volume);
     }
 
     public int getVolume() {
-        return this.player.getTrueMediaPlayer().mediaPlayer().audio().volume();
+        if (this.player != null) {
+            return this.player.getVolume();
+        }
+        return -1;
     }
 
     public void setBaseVolume(int vol) {
@@ -111,15 +199,13 @@ public class VideoRenderer {
     }
 
     public void setTime(long time) {
-        this.player.getTrueMediaPlayer().mediaPlayer().controls().setTime(time);
+        if (this.player != null) {
+            this.player.seekTo(time);
+        }
     }
 
     public void restart() {
         this.setTime(0L);
-    }
-
-    public ResourceLocation getLastFrame() {
-        return this.lastFrame;
     }
 
     public boolean canPlay() {
@@ -142,15 +228,25 @@ public class VideoRenderer {
 
     @Nullable
     public Dimension getVideoDimension() {
-        return this.player.getTrueMediaPlayer().mediaPlayer().video().videoDimension();
+        if (this.player != null && this.player.getRawPlayer() != null) {
+            return this.player.getRawPlayer().mediaPlayer().video().videoDimension();
+        }
+        return null;
     }
 
-    public MediaPlayer getPlayer() {
+    public VideoLanPlayer getPlayer() {
         return this.player;
     }
 
     public void destroy() {
-        MediaPlayers.removePlayer(this.playerId);
+        if (this.player != null) {
+            this.stop();
+            if (texture != -1) GlStateManager._deleteTexture(texture);
+            if (player.getRawPlayer() != null) {
+                this.player.release();
+            }
+            this.player = null;
+        }
     }
 
 }
