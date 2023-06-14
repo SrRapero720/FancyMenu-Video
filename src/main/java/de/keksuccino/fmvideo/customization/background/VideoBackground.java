@@ -8,6 +8,7 @@ import de.keksuccino.fmvideo.video.VideoHandler;
 import de.keksuccino.fmvideo.video.VideoRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.awt.*;
@@ -55,7 +56,7 @@ public class VideoBackground extends MenuBackground {
     }
 
     @Override
-    public void render(PoseStack matrixStack, Screen screen, boolean keepAspectRatio) {
+    public void render(GuiGraphics matrixStack, Screen screen, boolean keepAspectRatio) {
 
         try {
 
@@ -63,14 +64,14 @@ public class VideoBackground extends MenuBackground {
                 this.backgroundColor = new Color(0, 0, 0);
             }
 
-            GuiComponent.fill(matrixStack, 0, 0, screen.width, screen.height, this.backgroundColor.getRGB());
+            GuiGraphics.fill(matrixStack.pose(), 0, 0, screen.width, screen.height, this.backgroundColor.getRGB());
 
             if (this.renderer != null) {
                 if (this.renderer.isPlaying() && this.renderer.canPlay()) {
 
                     if (!keepAspectRatio) {
 
-                        this.renderer.render(matrixStack, 0, 0, screen.width, screen.height);
+                        this.renderer.render(matrixStack.pose(), 0, 0, screen.width, screen.height);
 
                     } else {
 
@@ -81,9 +82,9 @@ public class VideoBackground extends MenuBackground {
                         int wFinal = (int)(screen.height * ratio);
                         int screenCenterX = screen.width / 2;
                         if (wFinal < screen.width) {
-                            this.renderer.render(matrixStack, 0, 0, screen.width, screen.height);
+                            this.renderer.render(matrixStack.pose(), 0, 0, screen.width, screen.height);
                         } else {
-                            this.renderer.render(matrixStack, screenCenterX - (wFinal / 2), 0, wFinal, screen.height);
+                            this.renderer.render(matrixStack.pose(), screenCenterX - (wFinal / 2), 0, wFinal, screen.height);
                         }
 
                     }

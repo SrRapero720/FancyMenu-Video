@@ -4,13 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import de.keksuccino.konkrete.rendering.RenderUtils;
 import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.BufferFormat;
 import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
 import me.srrapero720.watermedia.api.media.players.VideoLanPlayer;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -108,7 +105,7 @@ public class VideoRenderer {
 //                RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
+                S.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
                 RenderSystem.disableBlend();
             }
 
