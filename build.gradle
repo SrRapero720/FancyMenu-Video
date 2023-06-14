@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net' }
 		maven { url = 'https://repo.spongepowered.org/maven' }
         mavenCentral()
     }
@@ -10,7 +10,6 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 //apply plugin: 'org.spongepowered.mixin'
 
@@ -27,7 +26,7 @@ println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getPro
 
 minecraft {
 
-	mappings channel: 'snapshot', version: '20210309-1.16.5'
+    mappings channel: 'official', version: '1.16.5'
 
     runs {
         client {
@@ -35,19 +34,31 @@ minecraft {
             //arg "-mixin.config=fancymenu.general.mixin.json"
         }
     }
-
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url "https://repo.spongepowered.org/maven" }
+    maven { url "https://maven.tterrag.com/" }
+    maven {
+        url "https://www.cursemaven.com"
+        content { includeGroup "curse.maven" }
+    }
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
-
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
     minecraft 'net.minecraftforge:forge:1.16.5-36.0.1'
-	
-	//annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
-	//testAnnotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
+
+
+    implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503129")
+    implementation fg.deobf("curse.maven:watermedia-869524:4583242")
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 }
 
@@ -71,7 +82,10 @@ jar {
             //"MixinConfigs" : "fancymenu.general.mixin.json"
         ])
     }
-	
 }
 
-jar.finalizedBy('reobfJar') 
+
+jar.finalizedBy('reobfJar')
+
+
+
