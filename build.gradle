@@ -55,6 +55,7 @@ dependencies {
 
 
     implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503129")
+    implementation fg.deobf("curse.maven:konkrete-410295:4514906")
     implementation fg.deobf("curse.maven:watermedia-869524:4583242")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
