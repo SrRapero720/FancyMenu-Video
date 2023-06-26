@@ -96,7 +96,7 @@ public class VideoRenderer {
     }
 
     public void render(PoseStack matrix, int posX, int posY, int width, int height) {
-        if (player == null || player.getRawPlayer() == null) return;
+        if (player == null || player.getRawPlayerComponent() == null) return;
 
         try {
             this.prerender();
