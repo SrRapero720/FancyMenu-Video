@@ -15,7 +15,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = '1.0.0'
 group = 'de.keksuccino'
-archivesBaseName = 'fmextension_video_watermedia'
+archivesBaseName = 'fmextension_video_watermedia_1.19.2'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 compileJava {
@@ -58,7 +58,7 @@ dependencies {
 
     implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503132")
     implementation fg.deobf("curse.maven:konkrete-410295:4514910")
-    implementation fg.deobf("curse.maven:watermedia-869524:4583242")
+    implementation fg.deobf("curse.maven:watermedia-869524:4607766")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
