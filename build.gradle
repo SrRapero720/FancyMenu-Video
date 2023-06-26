@@ -30,6 +30,7 @@ minecraft {
 
     runs {
         client {
+            taskName "FM-Video 1.18.2"
             workingDirectory project.file('run')
             //arg "-mixin.config=fancymenu.general.mixin.json"
         }
@@ -56,7 +57,7 @@ dependencies {
 
     implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503129")
     implementation fg.deobf("curse.maven:konkrete-410295:4514906")
-    implementation fg.deobf("curse.maven:watermedia-869524:4583242")
+    implementation fg.deobf("curse.maven:watermedia-869524:4607766")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'

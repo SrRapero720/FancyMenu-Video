@@ -4,15 +4,15 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import de.keksuccino.konkrete.rendering.RenderUtils;
-import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.BufferFormat;
-import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
-import me.srrapero720.watermedia.api.media.players.VideoLanPlayer;
+import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
+import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
+import me.srrapero720.watermedia.api.video.players.VideoLanPlayer;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -21,7 +21,8 @@ import java.nio.IntBuffer;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class VideoRenderer {
-    private static final Logger LOGGER = LogManager.getLogger("fmvideo/VideoRenderer");
+    private static final Logger LOGGER = LogManager.getLogger("fmvideo");
+    private static final Marker IT = MarkerManager.getMarker("VideoRenderer");
     protected String mediaPath;
     protected VideoLanPlayer player;
     private final ReentrantLock lock = new ReentrantLock();
@@ -40,7 +41,7 @@ public class VideoRenderer {
     public VideoRenderer(String mediaPathOrLink) {
         this.texture = GlStateManager._genTexture();
         this.mediaPath = mediaPathOrLink;
-        this.player = new VideoLanPlayer((mediaPlayer, nativeBuffers, bufferFormat) -> {
+        this.player = new VideoLanPlayer(null, (mediaPlayer, nativeBuffers, bufferFormat) -> {
             lock.lock();
             try {
                 buffer.put(nativeBuffers[0].asIntBuffer());
@@ -66,10 +67,10 @@ public class VideoRenderer {
             }
         });
 
-        if (this.player.getRawPlayer() != null) {
+        if (this.player.getRawPlayerComponent() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
         } else {
-            LOGGER.error("ERROR: Unable to initialize player for media: " + this.mediaPath);
+            LOGGER.error(IT, "ERROR: Unable to initialize player for media: " + this.mediaPath);
         }
 
     }
@@ -220,8 +221,8 @@ public class VideoRenderer {
 
     @Nullable
     public Dimension getVideoDimension() {
-        if (this.player != null && this.player.getRawPlayer() != null) {
-            return this.player.getRawPlayer().mediaPlayer().video().videoDimension();
+        if (this.player != null && this.player.getRawPlayerComponent() != null) {
+            return this.player.getRawPlayerComponent().mediaPlayer().video().videoDimension();
         }
         return null;
     }
@@ -234,7 +235,7 @@ public class VideoRenderer {
         if (this.player != null) {
             this.stop();
             if (texture != -1) GlStateManager._deleteTexture(texture);
-            if (player.getRawPlayer() != null) {
+            if (player.getRawPlayerComponent() != null) {
                 this.player.release();
             }
             this.player = null;
