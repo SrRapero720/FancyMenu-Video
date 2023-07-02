@@ -1,39 +1,40 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-		maven { url = 'https://repo.spongepowered.org/maven' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
+plugins {
+    id 'java'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.0.0'
-group = 'de.keksuccino'
-archivesBaseName = 'fmextension_video_watermedia_1.18.2'
+version = modversion
+group = modgroup
+base { archivesName = "${modid}-${mcversion}-${modversion}" }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-compileJava {
-    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-}
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
-
 minecraft {
-
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: mappingsch, version: mappings_version
 
     runs {
         client {
-            taskName "FM-Video 1.18.2"
+            taskName "FMClient-${mcversion}"
             workingDirectory project.file('run')
             //arg "-mixin.config=fancymenu.general.mixin.json"
         }
+    }
+}
+
+minecraft.runs.all {
+    // Tell forge to include your libraries in the classpath
+    lazyToken('minecraft_classpath') {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
     }
 }
 
@@ -52,21 +53,41 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.0.2'
-
-
-    implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503129")
-    implementation fg.deobf("curse.maven:konkrete-410295:4514906")
-    implementation fg.deobf("curse.maven:watermedia-869524:4607766")
-
+    minecraft 'net.minecraftforge:forge:1.19.2-43.2.14'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    // DEPENDENCIES
+    implementation fg.deobf("curse.maven:fancymenu-forge-367706:${fancymenuversion}")
+    implementation fg.deobf("curse.maven:konkrete-410295:${konkreteversion}")
+    implementation fg.deobf("curse.maven:watermedia-869524:${watermediaversion}")
+
+    // UTIL
+    implementation fg.deobf("curse.maven:ferritecore-429235:${ferritecoreversion}")
+    implementation fg.deobf("curse.maven:fastload-630620:${fastloadversion}")
+    implementation fg.deobf("curse.maven:lazy-dfu-forge-460819:${lazyversion}")
+    implementation fg.deobf("curse.maven:spark-361579:${sparkversion}")
+    implementation fg.deobf("curse.maven:rubidium-574856:${rubidiumversion}")
 }
 
-//mixin {
-//    add sourceSets.main, "fancymenu.general.mixin-refmap.json"
-//}
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def replaceProperties = [
+        minecraft_version: mcversion, minecraft_version_range: mcrange,
+        forge_version: fgversion, forge_version_range: fgrange,
+        loader_version_range: fgrange,
+        mod_id: modid, mod_name: modname, mod_license: modlicense, mod_version: modversion,
+        mod_authors: modauthor, mod_description: mod_description,
+        watermedia_version_range: watermediarange, fancymenu_version_range: fancymenurange
+]
+
+processResources {
+    inputs.properties replaceProperties
+    replaceProperties.put 'project', project
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+}
 
 jar {
     manifest {
@@ -88,6 +109,6 @@ jar {
 
 
 jar.finalizedBy('reobfJar')
-
-
-
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = 'UTF-8'
+}
