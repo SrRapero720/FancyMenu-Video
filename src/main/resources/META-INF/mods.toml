@@ -1,46 +1,35 @@
 modLoader="javafml"
-loaderVersion="[38,)"
-license="GPLv3"
+loaderVersion="${loader_version_range}"
+issueTrackerURL="https://github.com/SrRapero720/FancyMenu-Video/issues"
+logoFile="pack.png"
+license="${mod_license}"
+
 [[mods]]
-modId="fmextension_video"
-version="1.0.0"
-displayName="FancyMenu Video Extension"
-authors="Keksuccino"
-description='''
-It's a moving picture! Witch craft!
+    modId="${mod_id}"
+    version="${mod_version}"
+    displayName="${mod_name}"
+    authors="${mod_authors}"
+    credits="Special thanks to Kek"
+    logoFile="pack.png"
+    description='''${mod_description}'''
 
-COPYRIGHT:
+[[dependencies.${mod_id}]]
+    modId="fancymenu"
+    mandatory=true
+    ordering="AFTER"
+    versionRange="${fancymenu_version_range}"
+    side="BOTH"
 
-> FancyMenu Video Extension © Copyright 2022 Keksuccino.
-  FancyMenu Video Extension is licensed under GPLv3.
+[[dependencies.${mod_id}]]
+    modId="watermedia"
+    mandatory=true
+    versionRange="${watermedia_version_range}"
+    ordering="AFTER"
+    side="CLIENT"
 
-> WATERMeDIA © Copyright SrRapero720.
-'''
-
-[[dependencies.fmextension_video]]
-modId="fancymenu"
-mandatory=true
-ordering="AFTER"
-versionRange="[2.6.4,)"
-side="BOTH"
-
-[[dependencies.fmextension_video]]
-modId="watermedia"
-mandatory=true
-versionRange="[1,)"
-ordering="AFTER"
-side="BOTH"
-
-[[dependencies.fmextension_video]]
-modId="forge"
-mandatory=true
-versionRange="[38.0.6,)"
-ordering="NONE"
-side="CLIENT"
-
-[[dependencies.fmextension_video]]
-modId="minecraft"
-mandatory=true
-versionRange="[1.18,)"
-ordering="NONE"
-side="CLIENT"
+[[dependencies.${mod_id}]]
+    modId="forge"
+    mandatory=true
+    versionRange = "${loader_version_range}"
+    ordering="NONE"
+    side="CLIENT"
