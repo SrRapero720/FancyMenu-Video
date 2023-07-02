@@ -4,13 +4,16 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import de.keksuccino.fmvideo.util.GuiComponent;
-import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.BufferFormat;
-import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
-import me.srrapero720.watermedia.api.media.players.VideoLanPlayer;
+import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
+import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
+import me.srrapero720.watermedia.api.WaterMediaAPI;
+import me.srrapero720.watermedia.api.video.VideoLANPlayer;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -19,9 +22,10 @@ import java.nio.IntBuffer;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class VideoRenderer {
-    private static final Logger LOGGER = LogManager.getLogger("fmvideo/VideoRenderer");
+    private static final Logger LOGGER = LogManager.getLogger("fmvideo");
+    private static final Marker IT = MarkerManager.getMarker("VideoRenderer");
     protected String mediaPath;
-    protected VideoLanPlayer player;
+    protected VideoLANPlayer player;
     private final ReentrantLock lock = new ReentrantLock();
     protected int texture;
 
@@ -38,7 +42,7 @@ public class VideoRenderer {
     public VideoRenderer(String mediaPathOrLink) {
         this.texture = GlStateManager._genTexture();
         this.mediaPath = mediaPathOrLink;
-        this.player = new VideoLanPlayer((mediaPlayer, nativeBuffers, bufferFormat) -> {
+        this.player = new VideoLANPlayer(null, (mediaPlayer, nativeBuffers, bufferFormat) -> {
             lock.lock();
             try {
                 buffer.put(nativeBuffers[0].asIntBuffer());
@@ -64,10 +68,10 @@ public class VideoRenderer {
             }
         });
 
-        if (this.player.getRawPlayer() != null) {
+        if (this.player.getRaw() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
         } else {
-            LOGGER.error("ERROR: Unable to initialize player for media: " + this.mediaPath);
+            LOGGER.error(IT, "ERROR: Unable to initialize player for media: " + this.mediaPath);
         }
 
     }
@@ -93,7 +97,7 @@ public class VideoRenderer {
     }
 
     public void render(PoseStack matrix, int posX, int posY, int width, int height) {
-        if (player == null || player.getRawPlayer() == null) return;
+        if (player == null || player.getRaw() == null) return;
 
         try {
             this.prerender();
@@ -141,20 +145,14 @@ public class VideoRenderer {
         }
     }
 
-    public boolean isPlaying() {
-        return this.playing;
-    }
+    public boolean isPlaying() { return this.playing; }
 
     public void setLooping(boolean b) {
-        if (this.player != null) {
-            this.player.setRepeatMode(b);
-        }
+        if (this.player != null) this.player.setRepeatMode(b);
     }
 
     public boolean isLooping() {
-        if (this.player != null) {
-            return this.player.getRepeatMode();
-        }
+        if (this.player != null) return this.player.getRepeatMode();
         return false;
     }
 
@@ -166,12 +164,8 @@ public class VideoRenderer {
      */
     public void setVolume(int volume) {
         if (this.player != null) {
-            if (volume < 0) {
-                volume = 0;
-            }
-            if (volume > 200) {
-                volume = 200;
-            }
+            if (volume < 0) volume = 0;
+            if (volume > 200) volume = 200;
             this.player.setVolume(volume);
         }
     }
@@ -205,9 +199,7 @@ public class VideoRenderer {
     public boolean canPlay() {
         try {
             Dimension d = this.getVideoDimension();
-            if (d != null) {
-                return true;
-            }
+            if (d != null) return true;
         } catch (Exception e) {}
         return false;
     }
@@ -218,13 +210,11 @@ public class VideoRenderer {
 
     @Nullable
     public Dimension getVideoDimension() {
-        if (this.player != null && this.player.getRawPlayer() != null) {
-            return this.player.getRawPlayer().mediaPlayer().video().videoDimension();
-        }
+        if (this.player != null) return this.player.getDimensions();
         return null;
     }
 
-    public VideoLanPlayer getPlayer() {
+    public VideoLANPlayer getPlayer() {
         return this.player;
     }
 
@@ -232,7 +222,7 @@ public class VideoRenderer {
         if (this.player != null) {
             this.stop();
             if (texture != -1) GlStateManager._deleteTexture(texture);
-            if (player.getRawPlayer() != null) {
+            if (player.getRaw() != null) {
                 this.player.release();
             }
             this.player = null;
