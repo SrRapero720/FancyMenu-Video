@@ -31,13 +31,6 @@ minecraft {
     }
 }
 
-minecraft.runs.all {
-    // Tell forge to include your libraries in the classpath
-    lazyToken('minecraft_classpath') {
-        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
-    }
-}
-
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
