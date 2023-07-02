@@ -3,17 +3,16 @@ package de.keksuccino.fmvideo.video;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
 import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
-import me.srrapero720.watermedia.api.WaterMediaAPI;
 import me.srrapero720.watermedia.api.video.VideoLANPlayer;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -111,7 +110,16 @@ public class VideoRenderer {
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.enableBlend();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
+
+            Matrix4f matrix4f = matrix.last().pose();
+            BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+            bufferBuilder.vertex(matrix4f, (float)0, (float)0, (float)0).uv(0, 0).endVertex();
+            bufferBuilder.vertex(matrix4f, (float)0, (float)height, (float)0).uv(0, 1).endVertex();
+            bufferBuilder.vertex(matrix4f, (float)width, (float)height, (float)0).uv(1, 1).endVertex();
+            bufferBuilder.vertex(matrix4f, (float)width, (float)0, (float)0).uv(1, 0).endVertex();
+            BufferUploader.drawWithShader(bufferBuilder.end());
+
             RenderSystem.disableBlend();
         } catch (Exception e) {
             e.printStackTrace();
