@@ -13,7 +13,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = modversion
 group = modgroup
-base { archivesName = "${modid}-${mcversion}-${modversion}" }
+base { archivesName = "${modid}-${mcversion}" }
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
