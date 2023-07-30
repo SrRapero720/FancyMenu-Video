@@ -6,8 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
 import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
-import me.srrapero720.watermedia.api.WaterMediaAPI;
-import me.srrapero720.watermedia.api.video.VideoLANPlayer;
+import me.srrapero720.watermedia.api.video.SafeVideoLANPlayer;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +24,7 @@ public class VideoRenderer {
     private static final Logger LOGGER = LogManager.getLogger("fmvideo");
     private static final Marker IT = MarkerManager.getMarker("VideoRenderer");
     protected String mediaPath;
-    protected VideoLANPlayer player;
+    protected SafeVideoLANPlayer player;
     private final ReentrantLock lock = new ReentrantLock();
     protected int texture;
 
@@ -42,7 +41,7 @@ public class VideoRenderer {
     public VideoRenderer(String mediaPathOrLink) {
         this.texture = GlStateManager._genTexture();
         this.mediaPath = mediaPathOrLink;
-        this.player = new VideoLANPlayer(null, (mediaPlayer, nativeBuffers, bufferFormat) -> {
+        this.player = new SafeVideoLANPlayer(null, (mediaPlayer, nativeBuffers, bufferFormat) -> {
             lock.lock();
             try {
                 buffer.put(nativeBuffers[0].asIntBuffer());
@@ -68,7 +67,7 @@ public class VideoRenderer {
             }
         });
 
-        if (this.player.getRaw() != null) {
+        if (this.player.raw() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
         } else {
             LOGGER.error(IT, "ERROR: Unable to initialize player for media: " + this.mediaPath);
@@ -97,7 +96,7 @@ public class VideoRenderer {
     }
 
     public void render(PoseStack matrix, int posX, int posY, int width, int height) {
-        if (player == null || player.getRaw() == null) return;
+        if (player == null || player.raw() == null) return;
 
         try {
             this.prerender();
@@ -214,7 +213,7 @@ public class VideoRenderer {
         return null;
     }
 
-    public VideoLANPlayer getPlayer() {
+    public SafeVideoLANPlayer getPlayer() {
         return this.player;
     }
 
@@ -222,7 +221,7 @@ public class VideoRenderer {
         if (this.player != null) {
             this.stop();
             if (texture != -1) GlStateManager._deleteTexture(texture);
-            if (player.getRaw() != null) {
+            if (player.raw() != null) {
                 this.player.release();
             }
             this.player = null;
