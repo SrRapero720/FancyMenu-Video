@@ -4,9 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
-import me.lib720.caprica.vlcj.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
-import me.srrapero720.watermedia.api.video.SafeVideoLANPlayer;
+import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import org.apache.logging.log4j.LogManager;
@@ -17,55 +16,19 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.nio.IntBuffer;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class VideoRenderer {
     private static final Logger LOGGER = LogManager.getLogger("fmvideo");
     private static final Marker IT = MarkerManager.getMarker("VideoRenderer");
     protected String mediaPath;
-    protected SafeVideoLANPlayer player;
-    private final ReentrantLock lock = new ReentrantLock();
-    protected int texture;
-
-    // Texture data
-    private volatile int width = 1;
-    private volatile int height = 1;
-    private volatile IntBuffer buffer;
-    private volatile boolean first = true;
-    private volatile boolean needsUpdate = false;
+    protected SyncVideoPlayer player;
 
     protected boolean playing = false;
     protected int baseVolume = 100;
 
     public VideoRenderer(String mediaPathOrLink) {
-        this.texture = GlStateManager._genTexture();
         this.mediaPath = mediaPathOrLink;
-        this.player = new SafeVideoLANPlayer(null, (mediaPlayer, nativeBuffers, bufferFormat) -> {
-            lock.lock();
-            try {
-                buffer.put(nativeBuffers[0].asIntBuffer());
-                buffer.rewind();
-                needsUpdate = true;
-            } finally {
-                lock.unlock();
-            }
-        }, new UnAllocBufferFormatCallback() {
-            @Override
-            public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
-                lock.lock();
-                try {
-                    width = sourceWidth;
-                    height = sourceHeight;
-                    first = true;
-                    buffer = MemoryTracker.create(sourceWidth * sourceHeight * 4).asIntBuffer();
-                    needsUpdate = true;
-                } finally {
-                    lock.unlock();
-                }
-                return new BufferFormat("RGBA", sourceWidth, sourceHeight, new int[] { sourceWidth * 4 }, new int[] { sourceHeight });
-            }
-        });
+        this.player = new SyncVideoPlayer(null, Minecraft.getInstance(), MemoryTracker::create);
 
         if (this.player.raw() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
@@ -75,44 +38,21 @@ public class VideoRenderer {
 
     }
 
-    private void prerender() {
-        lock.lock();
-        try {
-            if (needsUpdate) {
-                GlStateManager._pixelStore(3314, 0);
-                GlStateManager._pixelStore(3316, 0);
-                GlStateManager._pixelStore(3315, 0);
-                RenderSystem.bindTexture(texture);
-                if (first) {
-                    GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-                    first = false;
-                } else
-                    GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-                needsUpdate = false;
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
     public void render(PoseStack matrix, int posX, int posY, int width, int height) {
         if (player == null || player.raw() == null) return;
 
         try {
-            this.prerender();
+            player.prepareTexture();
 
-            if (texture != -1) {
-                RenderSystem.bindTexture(texture);
-                RenderSystem.enableBlend();
-                RenderSystem.setShaderTexture(0, texture);
-                RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-//                RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
-                RenderSystem.disableBlend();
-            }
-
+            if (player.getTexture() == -1) return;
+            RenderSystem.bindTexture(player.getTexture());
+            RenderSystem.enableBlend();
+            RenderSystem.setShaderTexture(0, player.getTexture());
+            RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
+            RenderSystem.disableBlend();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -213,17 +153,14 @@ public class VideoRenderer {
         return null;
     }
 
-    public SafeVideoLANPlayer getPlayer() {
+    public SyncVideoPlayer getPlayer() {
         return this.player;
     }
 
     public void destroy() {
         if (this.player != null) {
             this.stop();
-            if (texture != -1) GlStateManager._deleteTexture(texture);
-            if (player.raw() != null) {
-                this.player.release();
-            }
+            this.player.release();
             this.player = null;
         }
     }
