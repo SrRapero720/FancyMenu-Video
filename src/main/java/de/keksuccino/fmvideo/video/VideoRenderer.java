@@ -1,112 +1,58 @@
 package de.keksuccino.fmvideo.video;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.systems.RenderSystem;
-import de.keksuccino.fmvideo.util.MemoryTracker;
-import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.BufferFormat;
-import me.lib720.caprica.vlcj4.player.embedded.videosurface.callback.UnAllocBufferFormatCallback;
-import me.srrapero720.watermedia.api.media.players.VideoLanPlayer;
-import net.minecraft.client.gui.AbstractGui;
+import com.mojang.blaze3d.vertex.PoseStack;
+import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GameRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.nio.IntBuffer;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class VideoRenderer {
-    private static final Logger LOGGER = LogManager.getLogger("fmvideo/VideoRenderer");
+    private static final Logger LOGGER = LogManager.getLogger("fmvideo");
+    private static final Marker IT = MarkerManager.getMarker("VideoRenderer");
     protected String mediaPath;
-    protected VideoLanPlayer player;
-    private final ReentrantLock lock = new ReentrantLock();
-    protected int texture;
-
-    // Texture data
-    private volatile int width = 1;
-    private volatile int height = 1;
-    private volatile IntBuffer buffer;
-    private volatile boolean first = true;
-    private volatile boolean needsUpdate = false;
+    protected SyncVideoPlayer player;
 
     protected boolean playing = false;
     protected int baseVolume = 100;
 
     public VideoRenderer(String mediaPathOrLink) {
-        this.texture = GlStateManager.genTexture();
         this.mediaPath = mediaPathOrLink;
-        this.player = new VideoLanPlayer((mediaPlayer, nativeBuffers, bufferFormat) -> {
-            lock.lock();
-            try {
-                buffer.put(nativeBuffers[0].asIntBuffer());
-                buffer.rewind();
-                needsUpdate = true;
-            } finally {
-                lock.unlock();
-            }
-        }, new UnAllocBufferFormatCallback() {
-            @Override
-            public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
-                lock.lock();
-                try {
-                    width = sourceWidth;
-                    height = sourceHeight;
-                    first = true;
-                    buffer = MemoryTracker.create(sourceWidth * sourceHeight * 4).asIntBuffer();
-                    needsUpdate = true;
-                } finally {
-                    lock.unlock();
-                }
-                return new BufferFormat("RGBA", sourceWidth, sourceHeight, new int[] { sourceWidth * 4 }, new int[] { sourceHeight });
-            }
-        });
+        this.player = new SyncVideoPlayer(null, Minecraft.getInstance(), MemoryTracker::create);
 
-        if (this.player.getRawPlayer() != null) {
+        if (this.player.raw() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
         } else {
-            LOGGER.error("ERROR: Unable to initialize player for media: " + this.mediaPath);
+            LOGGER.error(IT, "ERROR: Unable to initialize player for media: " + this.mediaPath);
         }
 
     }
 
-    private void prerender() {
-        lock.lock();
-        try {
-            if (needsUpdate) {
-                GlStateManager.pixelStore(3314, 0);
-                GlStateManager.pixelStore(3316, 0);
-                GlStateManager.pixelStore(3315, 0);
-                RenderSystem.bindTexture(texture);
-                if (first) {
-                    GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-                    first = false;
-                } else
-                    GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-                needsUpdate = false;
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void render(MatrixStack matrix, int posX, int posY, int width, int height) {
-        if (player == null || player.getRawPlayer() == null) return;
+    public void render(PoseStack matrix, int posX, int posY, int width, int height) {
+        if (player == null || player.raw() == null) return;
 
         try {
-            this.prerender();
+            player.prepareTexture();
 
-            if (texture != -1) {
-                RenderSystem.bindTexture(texture);
-                RenderSystem.enableBlend();
-                RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-                AbstractGui.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
-                RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-//                RenderSystem.setShader(GameRenderer::getOverlayTexture);
-                RenderSystem.disableBlend();
-            }
-
+            if (player.getTexture() == -1) return;
+            RenderSystem.bindTexture(player.getTexture());
+            RenderSystem.enableBlend();
+            RenderSystem.setShaderTexture(0, player.getTexture());
+            RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
+            RenderSystem.disableBlend();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,20 +84,14 @@ public class VideoRenderer {
         }
     }
 
-    public boolean isPlaying() {
-        return this.playing;
-    }
+    public boolean isPlaying() { return this.playing; }
 
     public void setLooping(boolean b) {
-        if (this.player != null) {
-            this.player.setRepeatMode(b);
-        }
+        if (this.player != null) this.player.setRepeatMode(b);
     }
 
     public boolean isLooping() {
-        if (this.player != null) {
-            return this.player.getRepeatMode();
-        }
+        if (this.player != null) return this.player.getRepeatMode();
         return false;
     }
 
@@ -163,12 +103,8 @@ public class VideoRenderer {
      */
     public void setVolume(int volume) {
         if (this.player != null) {
-            if (volume < 0) {
-                volume = 0;
-            }
-            if (volume > 200) {
-                volume = 200;
-            }
+            if (volume < 0) volume = 0;
+            if (volume > 200) volume = 200;
             this.player.setVolume(volume);
         }
     }
@@ -202,9 +138,7 @@ public class VideoRenderer {
     public boolean canPlay() {
         try {
             Dimension d = this.getVideoDimension();
-            if (d != null) {
-                return true;
-            }
+            if (d != null) return true;
         } catch (Exception e) {}
         return false;
     }
@@ -215,23 +149,18 @@ public class VideoRenderer {
 
     @Nullable
     public Dimension getVideoDimension() {
-        if (this.player != null && this.player.getRawPlayer() != null) {
-            return this.player.getRawPlayer().mediaPlayer().video().videoDimension();
-        }
+        if (this.player != null) return this.player.getDimensions();
         return null;
     }
 
-    public VideoLanPlayer getPlayer() {
+    public SyncVideoPlayer getPlayer() {
         return this.player;
     }
 
     public void destroy() {
         if (this.player != null) {
             this.stop();
-            if (texture != -1) GlStateManager.deleteTexture(texture);
-            if (player.getRawPlayer() != null) {
-                this.player.release();
-            }
+            this.player.release();
             this.player = null;
         }
     }

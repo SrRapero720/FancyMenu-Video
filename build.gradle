@@ -1,34 +1,30 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-		maven { url = 'https://repo.spongepowered.org/maven' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
-		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
+plugins {
+    id 'java'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
-//apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'org.spongepowered.mixin'
 
-version = '1.0.0'
-group = 'de.keksuccino'
-archivesBaseName = 'fmextension_video'
+version = modversion
+group = modgroup
+base { archivesName = "${modid}-${mcversion}" }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-compileJava {
-	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-}
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
-
 minecraft {
-    mappings channel: 'snapshot', version: '20210309-1.16.5'
+    mappings channel: mappingsch, version: mappings_version
+
     runs {
         client {
-            taskName "FM-Video 1.16.5"
+            taskName "FMClient-${mcversion}"
             workingDirectory project.file('run')
             //arg "-mixin.config=fancymenu.general.mixin.json"
         }
@@ -50,21 +46,42 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.0.1'
-
-
-    implementation fg.deobf("curse.maven:fancymenu-forge-367706:4503125")
-    implementation fg.deobf("curse.maven:konkrete-410295:4514901")
-    implementation fg.deobf(files("libs/watermedia-1.1.1.jar"))
-
+    minecraft "net.minecraftforge:forge:${mcversion}-${fgversion}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    // DEPENDENCIES
+    implementation fg.deobf("curse.maven:fancymenu-forge-367706:${fancymenuversion}")
+    implementation fg.deobf("curse.maven:konkrete-410295:${konkreteversion}")
+    implementation "com.github.SrRapero720.watermedia:build:${watermediaversion}"
+//    implementation fg.deobf("curse.maven:watermedia-869524:${watermediaversion}")
+
+    // UTIL
+    implementation fg.deobf("curse.maven:ferritecore-429235:${ferritecoreversion}")
+    implementation fg.deobf("curse.maven:fastload-630620:${fastloadversion}")
+    implementation fg.deobf("curse.maven:lazy-dfu-forge-460819:${lazyversion}")
+    implementation fg.deobf("curse.maven:spark-361579:${sparkversion}")
+    implementation fg.deobf("curse.maven:rubidium-574856:${rubidiumversion}")
 }
 
-//mixin {
-//    add sourceSets.main, "fancymenu.general.mixin-refmap.json"
-//}
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def replaceProperties = [
+        minecraft_version: mcversion, minecraft_version_range: mcrange,
+        forge_version: fgversion, forge_version_range: fgrange,
+        loader_version_range: fgrange,
+        mod_id: modid, mod_name: modname, mod_license: modlicense, mod_version: modversion,
+        mod_authors: modauthor, mod_description: mod_description,
+        watermedia_version_range: watermediarange, fancymenu_version_range: fancymenurange
+]
+
+processResources {
+    inputs.properties replaceProperties
+    replaceProperties.put 'project', project
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+}
 
 jar {
     manifest {
@@ -86,6 +103,6 @@ jar {
 
 
 jar.finalizedBy('reobfJar')
-
-
-
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = 'UTF-8'
+}
