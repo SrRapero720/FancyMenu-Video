@@ -53,7 +53,8 @@ dependencies {
     // DEPENDENCIES
     implementation fg.deobf("curse.maven:fancymenu-forge-367706:${fancymenuversion}")
     implementation fg.deobf("curse.maven:konkrete-410295:${konkreteversion}")
-    implementation fg.deobf("curse.maven:watermedia-869524:${watermediaversion}")
+    implementation "com.github.SrRapero720.watermedia:build:${watermediaversion}"
+//    implementation fg.deobf("curse.maven:watermedia-869524:${watermediaversion}")
 
     // UTIL
 //    implementation fg.deobf("curse.maven:ferritecore-429235:${ferritecoreversion}")
