@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.spongepowered.mixin' version '0.7.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
@@ -54,7 +53,6 @@ dependencies {
     implementation fg.deobf("curse.maven:fancymenu-forge-367706:${fancymenuversion}")
     implementation fg.deobf("curse.maven:konkrete-410295:${konkreteversion}")
     implementation "com.github.SrRapero720.watermedia:build:${watermediaversion}"
-//    implementation fg.deobf("curse.maven:watermedia-869524:${watermediaversion}")
 
     // UTIL
     implementation fg.deobf("curse.maven:ferritecore-429235:${ferritecoreversion}")
@@ -64,34 +62,24 @@ dependencies {
     implementation fg.deobf("curse.maven:rubidium-574856:${rubidiumversion}")
 }
 
-def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
-def replaceProperties = [
-        minecraft_version: mcversion, minecraft_version_range: mcrange,
-        forge_version: fgversion, forge_version_range: fgrange,
-        loader_version_range: fgrange,
-        mod_id: modid, mod_name: modname, mod_license: modlicense, mod_version: modversion,
-        mod_authors: modauthor, mod_description: mod_description,
-        watermedia_version_range: watermediarange, fancymenu_version_range: fancymenurange
-]
-
 processResources {
     inputs.properties replaceProperties
     replaceProperties.put 'project', project
 
-    filesMatching(resourceTargets) {
-        expand replaceProperties
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand rootProject.properties
     }
 }
 
 jar {
     manifest {
         attributes([
-            "Specification-Title": "FancyMenu Video Extension",
-            "Specification-Vendor": "Keksuccino",
-            "Specification-Version": "1",
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"Keksuccino",
+            "Specification-Title": modname,
+            "Specification-Vendor": modauthor,
+            "Specification-Version": modversion,
+            "Implementation-Title": modname,
+            "Implementation-Version": modversion,
+            "Implementation-Vendor" : modauthor,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "Signing-Fingerprint": project.hasProperty('fingerprint') ? project.property('fingerprint') : 'unsigned',
 			//"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
@@ -106,3 +94,4 @@ jar.finalizedBy('reobfJar')
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = 'UTF-8'
 }
+tasks.processResources.outputs.upToDateWhen { false }
