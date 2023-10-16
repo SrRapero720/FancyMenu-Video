@@ -136,8 +136,8 @@ public class VideoBackground extends MenuBackground {
     }
 
     protected static LayoutEditorScreen getEditorInstance() {
-        if (Minecraft.getInstance().currentScreen instanceof LayoutEditorScreen) {
-            return (LayoutEditorScreen) Minecraft.getInstance().currentScreen;
+        if (Minecraft.getInstance().screen instanceof LayoutEditorScreen) {
+            return (LayoutEditorScreen) Minecraft.getInstance().screen;
         }
         return null;
     }

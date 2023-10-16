@@ -2,7 +2,6 @@ package de.keksuccino.fmvideo;
 
 import java.io.File;
 
-import com.sun.org.slf4j.internal.LoggerFactory;
 import de.keksuccino.fancymenu.api.background.MenuBackgroundTypeRegistry;
 import de.keksuccino.fancymenu.api.buttonaction.ButtonActionRegistry;
 import de.keksuccino.fancymenu.api.item.CustomizationItemRegistry;
@@ -26,12 +25,13 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import com.sun.org.slf4j.internal.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod("fmextension_video")
+@Mod("fancymenu_video")
 public class FmVideo {
     public static final String VERSION = "1.0.0";
-    public static final Logger LOGGER = LoggerFactory.getLogger(FmVideo.class);
+    public static final Logger LOGGER = LogManager.getLogger(FmVideo.class);
     public static final File MOD_DIR = new File("config/fancymenu/extensions/fmvideo");
     public static Config config;
 

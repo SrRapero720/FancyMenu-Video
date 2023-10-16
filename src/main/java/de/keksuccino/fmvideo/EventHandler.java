@@ -32,14 +32,14 @@ public class EventHandler {
     protected LayoutEditorScreen lastEditorScreen = null;
     protected boolean stoppedInWorld = false;
 
-    protected float lastMcMasterVolume = Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER);
+    protected float lastMcMasterVolume = Minecraft.getInstance().options.getSoundSourceVolume(SoundCategory.MASTER);
 
     protected AdvancedImageButton openSettingsButton;
 
     public EventHandler() {
 
         this.openSettingsButton = new AdvancedImageButton(-10, 80, 44, 35, SETTINGS_ICON_LOCATION, true, (press) -> {
-            Minecraft.getInstance().displayGuiScreen(new FmVideoConfigScreen(Minecraft.getInstance().currentScreen));
+            Minecraft.getInstance().setScreen(new FmVideoConfigScreen(Minecraft.getInstance().screen));
         }) {
             @Override
             public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
@@ -101,7 +101,7 @@ public class EventHandler {
     public void onClientTick(TickEvent.ClientTickEvent e) {
 
         //Stop and reset video backgrounds when in a world (when no screen is active)
-        if (Minecraft.getInstance().currentScreen == null) {
+        if (Minecraft.getInstance().screen == null) {
             if (!this.stoppedInWorld) {
                 MenuCustomization.setIsNewMenu(true);
                 VideoBackground.lastRenderer = null;
@@ -118,10 +118,10 @@ public class EventHandler {
 
         //Update video volumes after changing MC master volume (if not disabled in config)
         if (!FmVideo.config.getOrDefault("ignore_mc_master_volume", false)) {
-            if (this.lastMcMasterVolume != Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER)) {
+            if (this.lastMcMasterVolume != Minecraft.getInstance().options.getSoundSourceVolume(SoundCategory.MASTER)) {
                 VideoVolumeHandler.updateVolume();
             }
-            this.lastMcMasterVolume = Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER);
+            this.lastMcMasterVolume = Minecraft.getInstance().options.getSoundSourceVolume(SoundCategory.MASTER);
         }
 
     }

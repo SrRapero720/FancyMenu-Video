@@ -83,7 +83,7 @@ public class VideoCustomizationItem extends CustomizationItem {
             int y = this.getPosY(menu);
             int w = this.getWidth();
             int h = this.getHeight();
-            FontRenderer font = Minecraft.getInstance().fontRenderer;
+            FontRenderer font = Minecraft.getInstance().font;
 
             if (this.renderer != null) {
 
@@ -98,8 +98,8 @@ public class VideoCustomizationItem extends CustomizationItem {
                 RenderSystem.enableBlend();
 
                 fill(matrix, x, y, x + w, y + h, Color.MAGENTA.getRGB());
-                drawCenteredString(matrix, font, Locals.localize("fancymenu.fmvideo.item.nomedia.line1"), x + (w / 2), y + (h / 2) - (font.FONT_HEIGHT / 2) - 5, -1);
-                drawCenteredString(matrix, font, Locals.localize("fancymenu.fmvideo.item.nomedia.line2"), x + (w / 2), y + (h / 2) - (font.FONT_HEIGHT / 2) + 5, -1);
+                drawCenteredString(matrix, font, Locals.localize("fancymenu.fmvideo.item.nomedia.line1"), x + (w / 2), y + (h / 2) - (font.lineHeight / 2) - 5, -1);
+                drawCenteredString(matrix, font, Locals.localize("fancymenu.fmvideo.item.nomedia.line2"), x + (w / 2), y + (h / 2) - (font.lineHeight / 2) + 5, -1);
 
             }
 

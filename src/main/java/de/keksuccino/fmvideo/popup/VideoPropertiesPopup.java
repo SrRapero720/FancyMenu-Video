@@ -71,9 +71,9 @@ public class VideoPropertiesPopup extends FMPopup {
         };
         this.addButton(this.loopButton);
 
-        this.volumeInputField = new AdvancedTextField(Minecraft.getInstance().fontRenderer, 0, 0, 100, 20, true, CharacterFilter.getIntegerCharacterFiler());
-        this.volumeInputField.setMaxStringLength(100000);
-        this.volumeInputField.setText("" + this.props.volume);
+        this.volumeInputField = new AdvancedTextField(Minecraft.getInstance().font, 0, 0, 100, 20, true, CharacterFilter.getIntegerCharacterFiler());
+        this.volumeInputField.setMaxLength(100000);
+        this.volumeInputField.setValue("" + this.props.volume);
 
     }
 
@@ -84,7 +84,7 @@ public class VideoPropertiesPopup extends FMPopup {
 
         int xCenter = renderIn.width / 2;
         int yCenter = renderIn.height / 2;
-        FontRenderer font = Minecraft.getInstance().fontRenderer;
+        FontRenderer font = Minecraft.getInstance().font;
 
         this.cancelButton.setX(xCenter - (this.cancelButton.getWidth()) - 5);
         this.cancelButton.setY(yCenter + 80);
@@ -94,7 +94,7 @@ public class VideoPropertiesPopup extends FMPopup {
 
         //Loop
         String loopString = Locals.localize("fancymenu.fmvideo.videoproperties.loop");
-        drawString(matrix, font, loopString, xCenter - font.getStringWidth(loopString) - 10, yCenter - 19, -1);
+        drawString(matrix, font, loopString, xCenter - font.width(loopString) - 10, yCenter - 19, -1);
 
         this.loopButton.setX(xCenter + 10);
         this.loopButton.setY(yCenter - 25);
@@ -102,30 +102,30 @@ public class VideoPropertiesPopup extends FMPopup {
 
         //Volume
         String volumeString = Locals.localize("fancymenu.fmvideo.videoproperties.volume");
-        drawString(matrix, font, volumeString, xCenter - font.getStringWidth(volumeString) - 10, yCenter + 11, -1);
+        drawString(matrix, font, volumeString, xCenter - font.width(volumeString) - 10, yCenter + 11, -1);
 
         this.volumeInputField.setX(xCenter + 10);
         this.volumeInputField.setY(yCenter + 5);
-        this.volumeInputField.render(matrix, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
+        this.volumeInputField.render(matrix, mouseX, mouseY, Minecraft.getInstance().getFrameTime());
         //------------------
 
         this.renderButtons(matrix, mouseX, mouseY);
 
         //Loop Desc
-        if ((mouseX >= font.getStringWidth(loopString) - 10) && (mouseX <= this.loopButton.getX() + this.loopButton.getWidth()) && (mouseY >= this.loopButton.getY()) && (mouseY <= this.loopButton.getY() + this.loopButton.getHeight())) {
+        if ((mouseX >= font.width(loopString) - 10) && (mouseX <= this.loopButton.getX() + this.loopButton.getWidth()) && (mouseY >= this.loopButton.getY()) && (mouseY <= this.loopButton.getY() + this.loopButton.getHeight())) {
             BackgroundOptionsPopup.renderDescription(matrix, mouseX, mouseY, Arrays.asList(StringUtils.splitLines(Locals.localize("fancymenu.fmvideo.videoproperties.loop.desc"), "%n%")));
         }
 
         //Volume Desc
-        if ((mouseX >= font.getStringWidth(volumeString) - 10) && (mouseX <= this.volumeInputField.getX() + this.volumeInputField.getWidth()) && (mouseY >= this.volumeInputField.getY()) && (mouseY <= this.volumeInputField.getY() + this.volumeInputField.getHeight())) {
+        if ((mouseX >= font.width(volumeString) - 10) && (mouseX <= this.volumeInputField.getX() + this.volumeInputField.getWidth()) && (mouseY >= this.volumeInputField.getY()) && (mouseY <= this.volumeInputField.getY() + this.volumeInputField.getHeight())) {
             BackgroundOptionsPopup.renderDescription(matrix, mouseX, mouseY, Arrays.asList(StringUtils.splitLines(Locals.localize("fancymenu.fmvideo.videoproperties.volume.desc"), "%n%")));
         }
 
     }
 
     protected void onClose() {
-        if (MathUtils.isInteger(this.volumeInputField.getText())) {
-            this.props.volume = Integer.parseInt(this.volumeInputField.getText());
+        if (MathUtils.isInteger(this.volumeInputField.getValue())) {
+            this.props.volume = Integer.parseInt(this.volumeInputField.getValue());
             if (this.props.volume < 0) {
                 this.props.volume = 0;
             }

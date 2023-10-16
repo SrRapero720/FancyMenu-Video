@@ -1,13 +1,10 @@
 package de.keksuccino.fmvideo.video;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.MemoryTracker;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.AbstractGui;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -28,7 +25,7 @@ public class VideoRenderer {
 
     public VideoRenderer(String mediaPathOrLink) {
         this.mediaPath = mediaPathOrLink;
-        this.player = new SyncVideoPlayer(null, Minecraft.getInstance(), MemoryTracker::create);
+        this.player = new SyncVideoPlayer(null, Minecraft.getInstance());
 
         if (this.player.raw() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
@@ -38,20 +35,18 @@ public class VideoRenderer {
 
     }
 
-    public void render(PoseStack matrix, int posX, int posY, int width, int height) {
+    public void render(MatrixStack matrix, int posX, int posY, int width, int height) {
         if (player == null || player.raw() == null) return;
 
         try {
-            player.prepareTexture();
+            int texture = player.prepareTexture();
 
-            if (player.getTexture() == -1) return;
-            RenderSystem.bindTexture(player.getTexture());
+            if (texture == -1) return;
+            RenderSystem.bindTexture(texture);
             RenderSystem.enableBlend();
-            RenderSystem.setShaderTexture(0, player.getTexture());
             RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
+            RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
+            AbstractGui.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
             RenderSystem.disableBlend();
         } catch (Exception e) {
             e.printStackTrace();

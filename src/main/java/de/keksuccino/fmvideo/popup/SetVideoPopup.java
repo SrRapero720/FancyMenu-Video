@@ -109,8 +109,8 @@ public class SetVideoPopup extends FMPopup {
         });
         this.addButton(this.cancelButton);
 
-        this.linkInputField = new AdvancedTextField(Minecraft.getInstance().fontRenderer, 0, 0, 200, 20, true, null);
-        this.linkInputField.setMaxStringLength(100000);
+        this.linkInputField = new AdvancedTextField(Minecraft.getInstance().font, 0, 0, 200, 20, true, null);
+        this.linkInputField.setMaxLength(100000);
 
         try {
             if (value != null) {
@@ -120,7 +120,7 @@ public class SetVideoPopup extends FMPopup {
                         this.selectedVideoPath = videoMeta.getEntryValue("video");
                         this.typeSwitcher.setSelectedValue(Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.local"));
                     } else {
-                        this.linkInputField.setText(videoMeta.getEntryValue("video"));
+                        this.linkInputField.setValue(videoMeta.getEntryValue("video"));
                         this.typeSwitcher.setSelectedValue(Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online"));
                     }
                 }
@@ -164,7 +164,7 @@ public class SetVideoPopup extends FMPopup {
                 }
                 pathString = Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.local.selected", s);
             }
-            drawCenteredString(matrix, Minecraft.getInstance().fontRenderer, pathString, xCenter, yCenter - 30, -1);
+            drawCenteredString(matrix, Minecraft.getInstance().font, pathString, xCenter, yCenter - 30, -1);
 
             this.chooseVideoButton.visible = true;
             this.chooseVideoButton.setX(xCenter - (this.chooseVideoButton.getWidth() / 2));
@@ -173,11 +173,11 @@ public class SetVideoPopup extends FMPopup {
         }
         if (selected.equals(Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online"))) {
 
-            drawCenteredString(matrix, Minecraft.getInstance().fontRenderer, Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online.enterlink"), xCenter, yCenter - 30, -1);
+            drawCenteredString(matrix, Minecraft.getInstance().font, Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online.enterlink"), xCenter, yCenter - 30, -1);
 
             this.linkInputField.setX(xCenter - (this.linkInputField.getWidth() / 2));
             this.linkInputField.setY(yCenter -15);
-            this.linkInputField.render(matrix, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
+            this.linkInputField.render(matrix, mouseX, mouseY, Minecraft.getInstance().getFrameTime());
 
         }
 
@@ -202,7 +202,7 @@ public class SetVideoPopup extends FMPopup {
         if (isLocal) {
             video = this.selectedVideoPath;
         } else {
-            video = this.linkInputField.getText();
+            video = this.linkInputField.getValue();
         }
         return VideoUtils.buildValueString(video, isLocal, this.props);
     }
@@ -211,7 +211,7 @@ public class SetVideoPopup extends FMPopup {
         String selected = this.typeSwitcher.getSelectedValue();
         boolean isLocal = selected.equals(Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.local"));
         if (!isLocal) {
-            if (UrlUtils.isValidUrl(this.linkInputField.getText())) {
+            if (UrlUtils.isValidUrl(this.linkInputField.getValue())) {
                 this.callback.accept(this.buildValueString());
                 if (this.parent != null) {
                     PopupHandler.displayPopup(this.parent);

@@ -110,7 +110,7 @@ public class VideoVolumeHandler {
         int newVolTemp = (int) (baseVolPercent * volume); //100% for MASTER
 
         if (!FmVideo.config.getOrDefault("ignore_mc_master_volume", false)) {
-            int mcMasterVol = (int) (Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER) * 100);
+            int mcMasterVol = (int) (Minecraft.getInstance().options.getSoundSourceVolume(SoundCategory.MASTER) * 100);
             double tempPercent = ((double)newVolTemp) / 100.0D;
             newVol = (int) (tempPercent * mcMasterVol);
         } else {
