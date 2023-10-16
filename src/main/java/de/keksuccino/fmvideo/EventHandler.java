@@ -28,7 +28,7 @@ import java.util.List;
 
 public class EventHandler {
 
-    protected static final ResourceLocation SETTINGS_ICON_LOCATION = new ResourceLocation("fmvideo", "fm_video_extension_settings_button.png");
+    protected static final ResourceLocation SETTINGS_ICON_LOCATION = new ResourceLocation(FmVideo.ID, "fm_video_extension_settings_button.png");
 
     protected LayoutEditorScreen lastEditorScreen = null;
     protected boolean stoppedInWorld = false;
