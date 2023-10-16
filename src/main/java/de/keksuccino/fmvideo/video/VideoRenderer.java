@@ -28,7 +28,7 @@ public class VideoRenderer {
 
     public VideoRenderer(String mediaPathOrLink) {
         this.mediaPath = mediaPathOrLink;
-        this.player = new SyncVideoPlayer(null, Minecraft.getInstance(), MemoryTracker::create);
+        this.player = new SyncVideoPlayer(null, Minecraft.getInstance());
 
         if (this.player.raw() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
