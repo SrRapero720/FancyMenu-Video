@@ -28,7 +28,7 @@ public class VideoRenderer {
 
     public VideoRenderer(String mediaPathOrLink) {
         this.mediaPath = mediaPathOrLink;
-        this.player = new SyncVideoPlayer(null, Minecraft.getInstance(), MemoryTracker::create);
+        this.player = new SyncVideoPlayer(null, Minecraft.getInstance());
 
         if (this.player.raw() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
@@ -42,11 +42,11 @@ public class VideoRenderer {
         if (player == null || player.raw() == null) return;
 
         try {
-            player.prepareTexture();
+            int texture = player.prepareTexture();
 
-            if (player.getTexture() == -1) return;
+            if (texture == -1) return;
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, player.getTexture());
+            RenderSystem.setShaderTexture(0, texture);
             RenderSystem.enableBlend();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
