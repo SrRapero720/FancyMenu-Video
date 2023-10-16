@@ -1,6 +1,5 @@
 package de.keksuccino.fmvideo.customization.item;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import de.keksuccino.fancymenu.api.item.CustomizationItem;
 import de.keksuccino.fancymenu.api.item.CustomizationItemContainer;
 import de.keksuccino.fancymenu.api.item.LayoutEditorElement;
@@ -16,6 +15,7 @@ import de.keksuccino.konkrete.input.StringUtils;
 import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.math.MathUtils;
 import de.keksuccino.konkrete.properties.PropertiesSection;
+import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -41,21 +41,19 @@ public class VideoLayoutEditorElement extends LayoutEditorElement {
             SetVideoPopup p = new SetVideoPopup(handler, null, valueString, false, (call) -> {
                 if (call != null) {
                     PropertiesSection videoProps = VideoUtils.readValueString(call);
-                    if (videoProps != null) {
-                        String video = videoProps.getEntryValue("video");
-                        if (video != null) {
-                            if ((i.mediaPathLink == null) || !video.equals(i.mediaPathLink)) {
-                                handler.history.saveSnapshot(handler.history.createSnapshot());
-                            }
-                            i.mediaPathLink = video;
-                            String local = videoProps.getEntryValue("islocal");
-                            if ((local != null) && local.equalsIgnoreCase("false")) {
-                                i.isLocal = false;
-                            }
-                            i.renderer = VideoHandler.getRenderer(i.mediaPathLink);
-                            if (i.renderer != null) {
-                                i.renderer.setTime(0L);
-                            }
+                    String video = videoProps.getEntryValue("video");
+                    if (video != null) {
+                        if (!video.equals(i.mediaPathLink)) {
+                            handler.history.saveSnapshot(handler.history.createSnapshot());
+                        }
+                        i.mediaPathLink = video;
+                        String local = videoProps.getEntryValue("islocal");
+                        if ((local != null) && local.equalsIgnoreCase("false")) {
+                            i.isLocal = false;
+                        }
+                        i.renderer = VideoHandler.getRenderer(i.mediaPathLink);
+                        if (i.renderer != null) {
+                            i.renderer.setTime(0L);
                         }
                     }
                 }
@@ -112,13 +110,13 @@ public class VideoLayoutEditorElement extends LayoutEditorElement {
             }
         }) {
             @Override
-            public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
                 if (i.looping) {
-                    this.setMessage(Locals.localize("fancymenu.fmvideo.item.options.loop.on"));
+                    this.setDescription(Locals.localize("fancymenu.fmvideo.item.options.loop.on"));
                 } else {
-                    this.setMessage(Locals.localize("fancymenu.fmvideo.item.options.loop.off"));
+                    this.setDescription(Locals.localize("fancymenu.fmvideo.item.options.loop.off"));
                 }
-                super.render(matrixStack, mouseX, mouseY, partialTicks);
+                super.drawButton(mc, mouseX, mouseY, partialTicks);
             }
         };
         loopButton.setDescription(StringUtils.splitLines(Locals.localize("fancymenu.fmvideo.item.options.loop.btn.desc"), "%n%"));

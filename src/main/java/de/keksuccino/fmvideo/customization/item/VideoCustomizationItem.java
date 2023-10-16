@@ -1,7 +1,5 @@
 package de.keksuccino.fmvideo.customization.item;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.api.item.CustomizationItem;
 import de.keksuccino.fancymenu.api.item.CustomizationItemContainer;
 import de.keksuccino.fmvideo.util.UrlUtils;
@@ -12,7 +10,9 @@ import de.keksuccino.konkrete.math.MathUtils;
 import de.keksuccino.konkrete.properties.PropertiesSection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.File;
@@ -75,7 +75,7 @@ public class VideoCustomizationItem extends CustomizationItem {
     }
 
     @Override
-    public void render(MatrixStack matrix, Screen menu) {
+    public void render(GuiScreen menu) {
 
         if (this.shouldRender()) {
 
@@ -83,7 +83,7 @@ public class VideoCustomizationItem extends CustomizationItem {
             int y = this.getPosY(menu);
             int w = this.getWidth();
             int h = this.getHeight();
-            FontRenderer font = Minecraft.getInstance().fontRenderer;
+            FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 
             if (this.renderer != null) {
 
@@ -91,16 +91,14 @@ public class VideoCustomizationItem extends CustomizationItem {
                 this.renderer.setBaseVolume(this.volume);
                 this.renderer.play();
 
-                this.renderer.render(matrix, x, y, this.getWidth(), this.getHeight());
+                this.renderer.render(x, y, this.getWidth(), this.getHeight());
 
             } else if (isEditorActive()) {
+                GL11.glEnable(GL11.GL_BLEND);
 
-                RenderSystem.enableBlend();
-
-                fill(matrix, x, y, x + w, y + h, Color.MAGENTA.getRGB());
-                drawCenteredString(matrix, font, Locals.localize("fancymenu.fmvideo.item.nomedia.line1"), x + (w / 2), y + (h / 2) - (font.FONT_HEIGHT / 2) - 5, -1);
-                drawCenteredString(matrix, font, Locals.localize("fancymenu.fmvideo.item.nomedia.line2"), x + (w / 2), y + (h / 2) - (font.FONT_HEIGHT / 2) + 5, -1);
-
+                Gui.drawRect(x, y, x + w, y + h, Color.MAGENTA.getRGB());
+                drawCenteredString(font, Locals.localize("fancymenu.fmvideo.item.nomedia.line1"), x + (w / 2), y + (h / 2) - (font.FONT_HEIGHT / 2) - 5, -1);
+                drawCenteredString(font, Locals.localize("fancymenu.fmvideo.item.nomedia.line2"), x + (w / 2), y + (h / 2) - (font.FONT_HEIGHT / 2) + 5, -1);
             }
 
         } else {

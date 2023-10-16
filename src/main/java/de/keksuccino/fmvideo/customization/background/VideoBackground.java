@@ -1,17 +1,17 @@
 package de.keksuccino.fmvideo.customization.background;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import de.keksuccino.fancymenu.api.background.MenuBackground;
 import de.keksuccino.fancymenu.api.background.MenuBackgroundType;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
-import de.keksuccino.fmvideo.FmVideo;
 import de.keksuccino.fmvideo.video.VideoHandler;
 import de.keksuccino.fmvideo.video.VideoRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 
 import java.awt.*;
+
+import static de.keksuccino.fmvideo.FmVideo.LOGGER;
 
 public class VideoBackground extends MenuBackground {
 
@@ -56,22 +56,22 @@ public class VideoBackground extends MenuBackground {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, Screen screen, boolean keepAspectRatio) {
-
+    public void render(GuiScreen screen, boolean keepAspectRatio) {
+        LOGGER.warn("Render");
         try {
 
             if (this.backgroundColor == null) {
                 this.backgroundColor = new Color(0, 0, 0);
             }
 
-            AbstractGui.fill(matrixStack, 0, 0, screen.width, screen.height, this.backgroundColor.getRGB());
+            Gui.drawRect(0, 0, screen.width, screen.height, this.backgroundColor.getRGB());
 
             if (this.renderer != null) {
                 if (this.renderer.isPlaying() && this.renderer.canPlay()) {
 
                     if (!keepAspectRatio) {
 
-                        this.renderer.render(matrixStack, 0, 0, screen.width, screen.height);
+                        this.renderer.render(0, 0, screen.width, screen.height);
 
                     } else {
 
@@ -82,9 +82,9 @@ public class VideoBackground extends MenuBackground {
                         int wFinal = (int)(screen.height * ratio);
                         int screenCenterX = screen.width / 2;
                         if (wFinal < screen.width) {
-                            this.renderer.render(matrixStack, 0, 0, screen.width, screen.height);
+                            this.renderer.render(0, 0, screen.width, screen.height);
                         } else {
-                            this.renderer.render(matrixStack, screenCenterX - (wFinal / 2), 0, wFinal, screen.height);
+                            this.renderer.render(screenCenterX - (wFinal / 2), 0, wFinal, screen.height);
                         }
 
                     }
@@ -136,8 +136,8 @@ public class VideoBackground extends MenuBackground {
     }
 
     protected static LayoutEditorScreen getEditorInstance() {
-        if (Minecraft.getInstance().currentScreen instanceof LayoutEditorScreen) {
-            return (LayoutEditorScreen) Minecraft.getInstance().currentScreen;
+        if (Minecraft.getMinecraft().currentScreen instanceof LayoutEditorScreen) {
+            return (LayoutEditorScreen) Minecraft.getMinecraft().currentScreen;
         }
         return null;
     }

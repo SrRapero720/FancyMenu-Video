@@ -1,6 +1,5 @@
 package de.keksuccino.fmvideo.popup;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.content.BackgroundOptionsPopup;
 import de.keksuccino.fancymenu.menu.fancy.helper.ui.popup.FMPopup;
 import de.keksuccino.konkrete.gui.content.AdvancedButton;
@@ -15,7 +14,7 @@ import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.math.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.GuiScreen;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -60,65 +59,67 @@ public class VideoPropertiesPopup extends FMPopup {
             }
         }) {
             @Override
-            public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
                 if (props.looping) {
-                    this.setMessage(Locals.localize("fancymenu.fmvideo.videoproperties.option.enabled"));
+                    this.setDescription(Locals.localize("fancymenu.fmvideo.videoproperties.option.enabled"));
                 } else {
-                    this.setMessage(Locals.localize("fancymenu.fmvideo.videoproperties.option.disabled"));
+                    this.setDescription(Locals.localize("fancymenu.fmvideo.videoproperties.option.disabled"));
                 }
-                super.render(matrixStack, mouseX, mouseY, partialTicks);
+                super.drawButton(mc, mouseX, mouseY, partialTicks);
             }
         };
         this.addButton(this.loopButton);
 
-        this.volumeInputField = new AdvancedTextField(Minecraft.getInstance().fontRenderer, 0, 0, 100, 20, true, CharacterFilter.getIntegerCharacterFiler());
+        this.volumeInputField = new AdvancedTextField(Minecraft.getMinecraft().fontRenderer, 0, 0, 100, 20, true, CharacterFilter.getIntegerCharacterFiler());
         this.volumeInputField.setMaxStringLength(100000);
         this.volumeInputField.setText("" + this.props.volume);
 
     }
 
     @Override
-    public void render(MatrixStack matrix, int mouseX, int mouseY, Screen renderIn) {
+    public void render(int mouseX, int mouseY, GuiScreen renderIn) {
 
-        super.render(matrix, mouseX, mouseY, renderIn);
+        super.render(mouseX, mouseY, renderIn);
 
         int xCenter = renderIn.width / 2;
         int yCenter = renderIn.height / 2;
-        FontRenderer font = Minecraft.getInstance().fontRenderer;
+        FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 
-        this.cancelButton.setX(xCenter - (this.cancelButton.getWidth()) - 5);
-        this.cancelButton.setY(yCenter + 80);
+        this.cancelButton.x = xCenter - (this.cancelButton.width) - 5;
+        this.cancelButton.y = yCenter + 80;
 
-        this.doneButton.setX(xCenter + 5);
-        this.doneButton.setY(yCenter + 80);
+        this.doneButton.x = xCenter + 5;
+        this.doneButton.y = yCenter + 80;
 
         //Loop
         String loopString = Locals.localize("fancymenu.fmvideo.videoproperties.loop");
-        drawString(matrix, font, loopString, xCenter - font.getStringWidth(loopString) - 10, yCenter - 19, -1);
+        drawString(font, loopString, xCenter - font.getStringWidth(loopString) - 10, yCenter - 19, -1);
 
-        this.loopButton.setX(xCenter + 10);
-        this.loopButton.setY(yCenter - 25);
+        this.loopButton.x = xCenter + 10;
+        this.loopButton.y = yCenter - 25;
         //------------------
 
         //Volume
         String volumeString = Locals.localize("fancymenu.fmvideo.videoproperties.volume");
-        drawString(matrix, font, volumeString, xCenter - font.getStringWidth(volumeString) - 10, yCenter + 11, -1);
+        drawString(font, volumeString, xCenter - font.getStringWidth(volumeString) - 10, yCenter + 11, -1);
 
-        this.volumeInputField.setX(xCenter + 10);
-        this.volumeInputField.setY(yCenter + 5);
-        this.volumeInputField.render(matrix, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
+        this.volumeInputField.x = xCenter + 10;
+        this.volumeInputField.y = yCenter + 5;
+        this.volumeInputField.drawTextBox();
+//        this.volumeInputField.render(mouseX, mouseY, Minecraft.getMinecraft().getRenderPartialTicks());
+
         //------------------
 
-        this.renderButtons(matrix, mouseX, mouseY);
+        this.renderButtons(mouseX, mouseY);
 
         //Loop Desc
-        if ((mouseX >= font.getStringWidth(loopString) - 10) && (mouseX <= this.loopButton.getX() + this.loopButton.getWidth()) && (mouseY >= this.loopButton.getY()) && (mouseY <= this.loopButton.getY() + this.loopButton.getHeight())) {
-            BackgroundOptionsPopup.renderDescription(matrix, mouseX, mouseY, Arrays.asList(StringUtils.splitLines(Locals.localize("fancymenu.fmvideo.videoproperties.loop.desc"), "%n%")));
+        if ((mouseX >= font.getStringWidth(loopString) - 10) && (mouseX <= this.loopButton.x + this.loopButton.width) && (mouseY >= this.loopButton.y) && (mouseY <= this.loopButton.y + this.loopButton.height)) {
+            BackgroundOptionsPopup.renderDescription(mouseX, mouseY, Arrays.asList(StringUtils.splitLines(Locals.localize("fancymenu.fmvideo.videoproperties.loop.desc"), "%n%")));
         }
 
         //Volume Desc
-        if ((mouseX >= font.getStringWidth(volumeString) - 10) && (mouseX <= this.volumeInputField.getX() + this.volumeInputField.getWidth()) && (mouseY >= this.volumeInputField.getY()) && (mouseY <= this.volumeInputField.getY() + this.volumeInputField.getHeight())) {
-            BackgroundOptionsPopup.renderDescription(matrix, mouseX, mouseY, Arrays.asList(StringUtils.splitLines(Locals.localize("fancymenu.fmvideo.videoproperties.volume.desc"), "%n%")));
+        if ((mouseX >= font.getStringWidth(volumeString) - 10) && (mouseX <= this.volumeInputField.x + this.volumeInputField.getWidth()) && (mouseY >= this.volumeInputField.y) && (mouseY <= this.volumeInputField.y + this.volumeInputField.height)) {
+            BackgroundOptionsPopup.renderDescription(mouseX, mouseY, Arrays.asList(StringUtils.splitLines(Locals.localize("fancymenu.fmvideo.videoproperties.volume.desc"), "%n%")));
         }
 
     }

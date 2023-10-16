@@ -1,0 +1,18 @@
+[
+{
+  "modid": "${modid}",
+  "name": "${modname}",
+  "description": "${moddescription}",
+  "version": "${modversion}",
+  "mcversion": "${mcversion}",
+  "url": "https://legacy.curseforge.com/minecraft/mc-mods/fancymenu-multimedia",
+  "updateUrl": "",
+  "authorList": ["keksuccino","SrRapero720"],
+  "credits": "Original code by Kek, maintained by SrRapero720. Powered by WATERMeDIA",
+  "logoFile": "pack.png",
+  "screenshots": [],
+  "dependencies": [
+    "mod_watermedia"
+  ]
+}
+]

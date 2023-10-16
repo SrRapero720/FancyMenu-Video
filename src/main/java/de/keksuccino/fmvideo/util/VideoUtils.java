@@ -6,7 +6,7 @@ import de.keksuccino.fmvideo.video.VideoHandler;
 import de.keksuccino.fmvideo.video.VideoRenderer;
 import de.keksuccino.konkrete.properties.PropertiesSection;
 import de.keksuccino.konkrete.properties.PropertiesSet;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.GuiScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class VideoUtils {
 //        return false;
 //    }
 
-    public static List<VideoRenderer> getRenderersOfMenu(Screen screen) {
+    public static List<VideoRenderer> getRenderersOfMenu(GuiScreen screen) {
         List<VideoRenderer> l = new ArrayList<>();
         try {
             List<PropertiesSet> layouts = MenuCustomizationProperties.getPropertiesWithIdentifier(screen.getClass().getName());

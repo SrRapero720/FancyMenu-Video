@@ -1,6 +1,5 @@
 package de.keksuccino.fmvideo.popup;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.content.BackgroundOptionsPopup;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.content.ChooseFilePopup;
@@ -20,7 +19,7 @@ import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.math.MathUtils;
 import de.keksuccino.konkrete.properties.PropertiesSection;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.GuiScreen;
 
 import java.awt.*;
 import java.io.File;
@@ -109,7 +108,7 @@ public class SetVideoPopup extends FMPopup {
         });
         this.addButton(this.cancelButton);
 
-        this.linkInputField = new AdvancedTextField(Minecraft.getInstance().fontRenderer, 0, 0, 200, 20, true, null);
+        this.linkInputField = new AdvancedTextField(Minecraft.getMinecraft().fontRenderer, 0, 0, 200, 20, true, null);
         this.linkInputField.setMaxStringLength(100000);
 
         try {
@@ -143,8 +142,8 @@ public class SetVideoPopup extends FMPopup {
     }
 
     @Override
-    public void render(MatrixStack matrix, int mouseX, int mouseY, Screen renderIn) {
-        super.render(matrix, mouseX, mouseY, renderIn);
+    public void render(int mouseX, int mouseY, GuiScreen renderIn) {
+        super.render(mouseX, mouseY, renderIn);
 
         int xCenter = renderIn.width / 2;
         int yCenter = renderIn.height / 2;
@@ -152,7 +151,7 @@ public class SetVideoPopup extends FMPopup {
 
         this.chooseVideoButton.visible = false;
 
-        this.typeSwitcher.render(matrix, xCenter - (this.typeSwitcher.getTotalWidth() / 2), yCenter - 85);
+        this.typeSwitcher.render(xCenter - (this.typeSwitcher.getTotalWidth() / 2), yCenter - 85);
 
         if (selected.equals(Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.local"))) {
 
@@ -164,35 +163,35 @@ public class SetVideoPopup extends FMPopup {
                 }
                 pathString = Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.local.selected", s);
             }
-            drawCenteredString(matrix, Minecraft.getInstance().fontRenderer, pathString, xCenter, yCenter - 30, -1);
+            drawCenteredString(Minecraft.getMinecraft().fontRenderer, pathString, xCenter, yCenter - 30, -1);
 
             this.chooseVideoButton.visible = true;
-            this.chooseVideoButton.setX(xCenter - (this.chooseVideoButton.getWidth() / 2));
-            this.chooseVideoButton.setY(yCenter - 15);
+            this.chooseVideoButton.x = xCenter - (this.chooseVideoButton.width / 2);
+            this.chooseVideoButton.y = yCenter - 15;
 
         }
         if (selected.equals(Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online"))) {
 
-            drawCenteredString(matrix, Minecraft.getInstance().fontRenderer, Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online.enterlink"), xCenter, yCenter - 30, -1);
+            drawCenteredString(Minecraft.getMinecraft().fontRenderer, Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.online.enterlink"), xCenter, yCenter - 30, -1);
 
-            this.linkInputField.setX(xCenter - (this.linkInputField.getWidth() / 2));
-            this.linkInputField.setY(yCenter -15);
-            this.linkInputField.render(matrix, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
-
+            this.linkInputField.x = (xCenter - (this.linkInputField.getWidth() / 2));
+            this.linkInputField.y = (yCenter -15);
+            this.linkInputField.drawTextBox();
+//            this.linkInputField.render(mouseX, mouseY, Minecraft.getMinecraft().getRenderPartialTicks());
         }
 
         if (this.videoPropertiesButton != null) {
-            this.videoPropertiesButton.setX(xCenter - (this.videoPropertiesButton.getWidth() / 2));
-            this.videoPropertiesButton.setY(yCenter + 20);
+            this.videoPropertiesButton.x = xCenter - (this.videoPropertiesButton.width / 2);
+            this.videoPropertiesButton.y = (yCenter + 20);
         }
 
-        this.cancelButton.setX(xCenter - (this.cancelButton.getWidth()) - 5);
-        this.cancelButton.setY(yCenter + 80);
+        this.cancelButton.x = (xCenter - (this.cancelButton.width) - 5);
+        this.cancelButton.y = (yCenter + 80);
 
-        this.doneButton.setX(xCenter + 5);
-        this.doneButton.setY(yCenter + 80);
+        this.doneButton.x = (xCenter + 5);
+        this.doneButton.y = (yCenter + 80);
 
-        this.renderButtons(matrix, mouseX, mouseY);
+        this.renderButtons(mouseX, mouseY);
     }
 
     protected String buildValueString() {

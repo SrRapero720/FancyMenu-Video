@@ -1,13 +1,13 @@
 package de.keksuccino.fmvideo.video;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.MemoryTracker;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -16,6 +16,8 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.awt.*;
+
+import static net.minecraft.client.gui.Gui.OPTIONS_BACKGROUND;
 
 public class VideoRenderer {
     private static final Logger LOGGER = LogManager.getLogger("fmvideo");
@@ -28,7 +30,7 @@ public class VideoRenderer {
 
     public VideoRenderer(String mediaPathOrLink) {
         this.mediaPath = mediaPathOrLink;
-        this.player = new SyncVideoPlayer(null, Minecraft.getInstance(), MemoryTracker::create);
+        this.player = new SyncVideoPlayer(r -> Minecraft.getMinecraft().addScheduledTask(r), GLAllocation::createDirectByteBuffer);
 
         if (this.player.raw() != null) {
             if (!this.player.isValid()) this.player.start(mediaPathOrLink);
@@ -38,21 +40,23 @@ public class VideoRenderer {
 
     }
 
-    public void render(PoseStack matrix, int posX, int posY, int width, int height) {
-        if (player == null || player.raw() == null) return;
+    public void render(int posX, int posY, int width, int height) {
+        if (player == null || player.isBroken()) return;
 
         try {
-            player.prepareTexture();
+            LOGGER.warn("Render INTERNAL");
+            int texture = player.prepareTexture();
+            if (texture == -1) return;
 
-            if (player.getTexture() == -1) return;
-            RenderSystem.bindTexture(player.getTexture());
-            RenderSystem.enableBlend();
-            RenderSystem.setShaderTexture(0, player.getTexture());
-            RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            GuiComponent.blit(matrix, posX, posY, 0.0F, 0.0F, width, height, width, height);
-            RenderSystem.disableBlend();
+            GlStateManager.enableBlend();
+            GlStateManager.disableLighting();
+            GlStateManager.disableFog();
+            GlStateManager.bindTexture(texture);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            Gui.drawModalRectWithCustomSizedTexture(posX, posY, 0.0F, 0.0F, width, height, width, height);
+            GlStateManager.disableBlend();
         } catch (Exception e) {
             e.printStackTrace();
         }

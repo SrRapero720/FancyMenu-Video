@@ -14,8 +14,10 @@ version = modversion
 group = modgroup
 base { archivesName = "${modid}-${mcversion}" }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
@@ -52,17 +54,13 @@ dependencies {
     // DEPENDENCIES
     implementation fg.deobf("curse.maven:fancymenu-forge-367706:${fancymenuversion}")
     implementation fg.deobf("curse.maven:konkrete-410295:${konkreteversion}")
+//    implementation fg.deobf("curse.maven:mixin-booter-419286:4752579")
+    implementation fg.deobf("curse.maven:mixinbootstrap-357178:3437402")
     implementation "com.github.SrRapero720.watermedia:build:${watermediaversion}"
-
-    // UTIL
-    implementation fg.deobf("curse.maven:ferritecore-429235:${ferritecoreversion}")
-    implementation fg.deobf("curse.maven:lazy-dfu-forge-460819:${lazyversion}")
-    implementation fg.deobf("curse.maven:spark-361579:${sparkversion}")
-    implementation fg.deobf("curse.maven:rubidium-574856:${rubidiumversion}")
 }
 
 processResources {
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta', 'mcmod.info']) {
         expand rootProject.properties
     }
 }
@@ -78,9 +76,10 @@ jar {
             "Implementation-Vendor" : modauthor,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "Signing-Fingerprint": project.hasProperty('fingerprint') ? project.property('fingerprint') : 'unsigned',
-			//"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            //"TweakOrder": 0,
-            //"MixinConfigs" : "fancymenu.general.mixin.json"
+            "ForceLoadAsMod": true,
+			"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+            "TweakOrder": 0,
+//            "MixinConfigs" : "fancymenu.general.mixin.json"
         ])
     }
 }

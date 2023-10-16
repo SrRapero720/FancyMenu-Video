@@ -1,8 +1,5 @@
 package de.keksuccino.fmvideo;
 
-import java.io.File;
-
-import com.sun.org.slf4j.internal.LoggerFactory;
 import de.keksuccino.fancymenu.api.background.MenuBackgroundTypeRegistry;
 import de.keksuccino.fancymenu.api.buttonaction.ButtonActionRegistry;
 import de.keksuccino.fancymenu.api.item.CustomizationItemRegistry;
@@ -13,40 +10,35 @@ import de.keksuccino.fmvideo.customization.buttonaction.UpperVideoVolumeButtonAc
 import de.keksuccino.fmvideo.customization.item.VideoCustomizationItemContainer;
 import de.keksuccino.fmvideo.customization.placeholder.VideoVolumePlaceholder;
 import de.keksuccino.fmvideo.video.VideoVolumeHandler;
-import de.keksuccino.konkrete.localization.Locals;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.network.FMLNetworkConstants;
-import org.apache.commons.lang3.tuple.Pair;
 import de.keksuccino.konkrete.Konkrete;
 import de.keksuccino.konkrete.config.Config;
 import de.keksuccino.konkrete.config.exceptions.InvalidValueException;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
+import de.keksuccino.konkrete.localization.Locals;
+import me.srrapero720.watermedia.modloaders.forge.ForgeModLoader;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import com.sun.org.slf4j.internal.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod("fmextension_video")
+import java.io.File;
+
+@Mod(modid = "fancymenu_video", acceptableRemoteVersions = FmVideo.VERSION, useMetadata = true, dependencies = "required-after:watermedia@[2.0,2.1];after:fancymenu@[2.14.9]")
 public class FmVideo {
-    public static final String VERSION = "1.0.0";
-    public static final Logger LOGGER = LoggerFactory.getLogger(FmVideo.class);
-    public static final File MOD_DIR = new File("config/fancymenu/extensions/fmvideo");
+    public static final String ID = "fancymenu_video";
+    public static final String VERSION = "2.1.2";
+    public static final Logger LOGGER = LogManager.getLogger(FmVideo.class);
+    public static final File MOD_DIR = new File("config/fancymenu/extensions/" + ID);
     public static Config config;
 
     public FmVideo() {
-        if (FMLEnvironment.dist != Dist.CLIENT) {
+        if (FMLCommonHandler.instance().getSide().isServer()) {
             LOGGER.warn("## WARNING ## 'FancyMenu Video Extension' is a client mod and has no effect when loaded on a server!");
             return;
         }
 
         try {
-
-            //For real, what even is this cursed piece of code?
-            //Who thinks of an easy way to set mods to client/server only and this comes to their mind???
-            ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-
                 if (!MOD_DIR.exists()) {
                     MOD_DIR.mkdirs();
                 }
@@ -67,7 +59,7 @@ public class FmVideo {
             //Register placeholders
             PlaceholderTextRegistry.registerPlaceholder(new VideoVolumePlaceholder());
 
-            Konkrete.addPostLoadingEvent("fmextension_video", this::onClientSetup);
+            Konkrete.addPostLoadingEvent(ID, this::onClientSetup);
 
             MinecraftForge.EVENT_BUS.register(new EventHandler());
         } catch (Exception e) {
@@ -90,7 +82,7 @@ public class FmVideo {
             f.mkdirs();
         }
 
-        Locals.copyLocalsFileToDir(new ResourceLocation("fmvideo", baseDir + "en_us.local"), "en_us", f.getPath());
+        Locals.copyLocalsFileToDir(new ResourceLocation(FmVideo.ID, baseDir + "en_us.local"), "en_us", f.getPath());
 //        Locals.copyLocalsFileToDir(new ResourceLocation("fmvideo", baseDir + "de_de.local"), "de_de", f.getPath());
         Locals.getLocalsFromDir(f.getPath());
     }
