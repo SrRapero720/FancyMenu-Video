@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="${loaderrange}"
 license="GPLv3"
+logoFile="pack.png"
 issueTrackerURL="https://github.com/SrRapero720/FancyMenu-Video/issues"
 [[mods]]
     modId="${modid}"
