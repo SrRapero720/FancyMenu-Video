@@ -44,7 +44,7 @@ public class VideoUtils {
         List<VideoRenderer> l = new ArrayList<>();
         try {
             List<PropertiesSet> layouts = MenuCustomizationProperties.getPropertiesWithIdentifier(screen.getClass().getName());
-            if ((layouts != null) && !layouts.isEmpty()) {
+            if (!layouts.isEmpty()) {
                 for (PropertiesSet s : layouts) {
                     for (PropertiesSection sec : s.getPropertiesOfType("customization")) {
                         String action = sec.getEntryValue("action");

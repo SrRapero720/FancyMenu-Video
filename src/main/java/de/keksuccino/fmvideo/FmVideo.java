@@ -14,7 +14,6 @@ import de.keksuccino.konkrete.Konkrete;
 import de.keksuccino.konkrete.config.Config;
 import de.keksuccino.konkrete.config.exceptions.InvalidValueException;
 import de.keksuccino.konkrete.localization.Locals;
-import me.srrapero720.watermedia.modloaders.forge.ForgeModLoader;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -24,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-@Mod(modid = "fancymenu_video", acceptableRemoteVersions = FmVideo.VERSION, useMetadata = true, dependencies = "required-after:watermedia@[2.0,2.1];after:fancymenu@[2.14.9]")
+@Mod(modid = "fancymenu_video", acceptableRemoteVersions = FmVideo.VERSION, dependencies = "required-after:watermedia@[2.0,2.1];after:fancymenu@[2.14.9]")
 public class FmVideo {
     public static final String ID = "fancymenu_video";
     public static final String VERSION = "2.1.2";
@@ -39,9 +38,7 @@ public class FmVideo {
         }
 
         try {
-                if (!MOD_DIR.exists()) {
-                    MOD_DIR.mkdirs();
-                }
+            if (!MOD_DIR.exists()) MOD_DIR.mkdirs();
 
             updateConfig();
             VideoVolumeHandler.init();

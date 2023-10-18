@@ -3,11 +3,8 @@ package de.keksuccino.fmvideo.video;
 import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -16,8 +13,6 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-
-import static net.minecraft.client.gui.Gui.OPTIONS_BACKGROUND;
 
 public class VideoRenderer {
     private static final Logger LOGGER = LogManager.getLogger("fmvideo");
@@ -44,7 +39,6 @@ public class VideoRenderer {
         if (player == null || player.isBroken()) return;
 
         try {
-            LOGGER.warn("Render INTERNAL");
             int texture = player.prepareTexture();
             if (texture == -1) return;
 

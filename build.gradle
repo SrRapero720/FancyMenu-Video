@@ -26,8 +26,9 @@ minecraft {
     runs {
         client {
             taskName "FMClient-${mcversion}"
+
             workingDirectory project.file('run')
-            //arg "-mixin.config=fancymenu.general.mixin.json"
+            arg "-mixin.config=fancymenu.general.mixin.json"
         }
     }
 }
@@ -48,14 +49,17 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mcversion}-${fgversion}"
+    implementation ('org.spongepowered:mixin:0.8.5') {
+        exclude module: 'guava'
+        exclude module: 'commons-io'
+        exclude module: 'gson'
+    }
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     // DEPENDENCIES
     implementation fg.deobf("curse.maven:fancymenu-forge-367706:${fancymenuversion}")
     implementation fg.deobf("curse.maven:konkrete-410295:${konkreteversion}")
-//    implementation fg.deobf("curse.maven:mixin-booter-419286:4752579")
-    implementation fg.deobf("curse.maven:mixinbootstrap-357178:3437402")
     implementation "com.github.SrRapero720.watermedia:build:${watermediaversion}"
 }
 

@@ -57,7 +57,6 @@ public class VideoBackground extends MenuBackground {
 
     @Override
     public void render(GuiScreen screen, boolean keepAspectRatio) {
-        LOGGER.warn("Render");
         try {
 
             if (this.backgroundColor == null) {
