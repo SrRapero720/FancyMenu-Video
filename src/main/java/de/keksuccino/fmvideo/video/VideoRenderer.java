@@ -1,8 +1,8 @@
 package de.keksuccino.fmvideo.video;
 
+import de.keksuccino.fancymenu.menu.fancy.helper.ui.compat.AbstractGui;
 import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import org.apache.logging.log4j.LogManager;
@@ -49,12 +49,11 @@ public class VideoRenderer {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-            Gui.drawModalRectWithCustomSizedTexture(posX, posY, 0.0F, 0.0F, width, height, width, height);
+            AbstractGui.blit(posX, posY, 0.0F, 0.0F, width, height, width, height);
             GlStateManager.disableBlend();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
-
     }
 
     public void play() {

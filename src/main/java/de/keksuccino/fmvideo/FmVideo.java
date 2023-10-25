@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-@Mod(modid = "fancymenu_video", acceptableRemoteVersions = FmVideo.VERSION, dependencies = "required-after:watermedia@[2.0,2.1];after:fancymenu@[2.14.9]")
+@Mod(modid = FmVideo.ID, acceptableRemoteVersions = FmVideo.VERSION, dependencies = "required-after:watermedia@[2.0,2.1];after:fancymenu@[2.14.9]")
 public class FmVideo {
     public static final String ID = "fancymenu_video";
     public static final String VERSION = "2.1.2";

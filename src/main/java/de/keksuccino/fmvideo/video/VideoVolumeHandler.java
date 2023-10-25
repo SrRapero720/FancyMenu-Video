@@ -12,9 +12,7 @@ import java.io.File;
 import java.util.List;
 
 public class VideoVolumeHandler {
-
     protected static final File PROPS_FILE = new File(FmVideo.MOD_DIR.getPath() + "/video_volume.properties");
-
     protected static int volume = 100;
 
     public static void init() {
@@ -86,8 +84,6 @@ public class VideoVolumeHandler {
     public static int getVolume() { return volume; }
     public static void updateVolume() { setVolume(getVolume()); }
     public static void updateRendererVolume(VideoRenderer renderer) {
-        int newVol;
-
         int baseVol = renderer.baseVolume; //100% for volume handler
         double baseVolPercent = ((double)baseVol) / 100.0D;
         int newVolTemp = (int) (baseVolPercent * volume); //100% for MASTER
@@ -95,13 +91,9 @@ public class VideoVolumeHandler {
         if (!FmVideo.config.getOrDefault("ignore_mc_master_volume", false)) {
             int mcMasterVol = (int) (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) * 100);
             double tempPercent = ((double)newVolTemp) / 100.0D;
-            newVol = (int) (tempPercent * mcMasterVol);
+            renderer.setVolume((int) (tempPercent * mcMasterVol));
         } else {
-            newVol = newVolTemp;
+            renderer.setVolume(newVolTemp);
         }
-
-        renderer.setVolume(newVol);
-
     }
-
 }
