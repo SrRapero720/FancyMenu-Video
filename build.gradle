@@ -14,8 +14,8 @@ group = modgroup
 base { archivesName = "${modid}-${mcversion}" }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
@@ -47,7 +47,6 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    jcenter()
     mavenCentral()
     maven { url "https://repo.spongepowered.org/maven" }
     maven { url "https://maven.tterrag.com/" }
@@ -82,17 +81,17 @@ processResources {
 jar {
     manifest {
         attributes([
-            "Specification-Title": modname,
-            "Specification-Vendor": modauthor,
-            "Specification-Version": modversion,
-            "Implementation-Title": modname,
-            "Implementation-Version": modversion,
-            "Implementation-Vendor" : modauthor,
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "Signing-Fingerprint": project.hasProperty('fingerprint') ? project.property('fingerprint') : 'unsigned',
-			//"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            //"TweakOrder": 0,
-            //"MixinConfigs" : "fancymenu.general.mixin.json"
+                "Specification-Title"       : modname,
+                "Specification-Vendor"      : modauthor,
+                "Specification-Version"     : modversion,
+                "Implementation-Title"      : modname,
+                "Implementation-Version"    : modversion,
+                "Implementation-Vendor"     : modauthor,
+                "Implementation-Timestamp"  : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "Signing-Fingerprint"       : project.hasProperty('fingerprint') ? project.property('fingerprint') : 'unsigned',
+                //"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+                //"TweakOrder": 0,
+                //"MixinConfigs" : "fancymenu.general.mixin.json"
         ])
     }
 }

@@ -51,10 +51,8 @@ public class VideoVolumeHandler {
 
     }
 
-    protected  static void readFromFile() {
-
+    protected static void readFromFile() {
         try {
-
             PropertiesSet set = PropertiesSerializer.getProperties(PROPS_FILE.getPath());
             if (set != null) {
                 List<PropertiesSection> secs = set.getPropertiesOfType("video_volume");
@@ -66,7 +64,6 @@ public class VideoVolumeHandler {
                     }
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -93,18 +90,9 @@ public class VideoVolumeHandler {
     /**
      * Value between 0% and 100%
      */
-    public static int getVolume() {
-        return volume;
-    }
-
-    public static void updateVolume() {
-        setVolume(getVolume());
-    }
-
+    public static int getVolume() { return volume; }
+    public static void updateVolume() { setVolume(getVolume()); }
     public static void updateRendererVolume(VideoRenderer renderer) {
-
-        int newVol = renderer.getVolume();
-
         int baseVol = renderer.baseVolume; //100% for volume handler
         double baseVolPercent = ((double)baseVol) / 100.0D;
         int newVolTemp = (int) (baseVolPercent * volume); //100% for MASTER
@@ -112,13 +100,9 @@ public class VideoVolumeHandler {
         if (!FmVideo.config.getOrDefault("ignore_mc_master_volume", false)) {
             int mcMasterVol = (int) (Minecraft.getInstance().options.getSoundSourceVolume(SoundCategory.MASTER) * 100);
             double tempPercent = ((double)newVolTemp) / 100.0D;
-            newVol = (int) (tempPercent * mcMasterVol);
+            renderer.setVolume((int) (tempPercent * mcMasterVol));
         } else {
-            newVol = newVolTemp;
+            renderer.setVolume(newVolTemp);
         }
-
-        renderer.setVolume(newVol);
-
     }
-
 }
