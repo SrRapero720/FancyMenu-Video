@@ -34,15 +34,28 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    jcenter()
     mavenCentral()
-    maven { url "https://repo.spongepowered.org/maven" }
-    maven { url "https://maven.tterrag.com/" }
     maven {
+        name 'MinecraftForge'
+        url 'https://maven.minecraftforge.net/'
+    }
+    maven {
+        name 'SpongePowered'
+        url "https://repo.spongepowered.org/maven"
+    }
+    maven {
+        name 'TTerrag'
+        url "https://maven.tterrag.com/"
+    }
+    maven {
+        name 'CurseMaven'
         url "https://www.cursemaven.com"
         content { includeGroup "curse.maven" }
     }
-    maven { url 'https://jitpack.io' }
+    maven {
+        name 'JitPack.io'
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
@@ -54,7 +67,6 @@ dependencies {
     implementation fg.deobf("curse.maven:fancymenu-forge-367706:${fancymenuversion}")
     implementation fg.deobf("curse.maven:konkrete-410295:${konkreteversion}")
     implementation "com.github.SrRapero720.watermedia:build:${watermediaversion}"
-//    implementation fg.deobf("curse.maven:watermedia-869524:${watermediaversion}")
 
     // UTIL
     implementation fg.deobf("curse.maven:ferritecore-429235:${ferritecoreversion}")
@@ -86,21 +98,20 @@ processResources {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "FancyMenu Video Extension",
-            "Specification-Vendor": "Keksuccino",
-            "Specification-Version": "1",
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"Keksuccino",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "Signing-Fingerprint": project.hasProperty('fingerprint') ? project.property('fingerprint') : 'unsigned',
+            "Specification-Title"       : modname,
+            "Specification-Vendor"      : modauthor,
+            "Specification-Version"     : modversion,
+            "Implementation-Title"      : modname,
+            "Implementation-Version"    : modversion,
+            "Implementation-Vendor"     : modauthor,
+            "Implementation-Timestamp"  : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            "Signing-Fingerprint"       : project.hasProperty('fingerprint') ? project.property('fingerprint') : 'unsigned',
 			//"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             //"TweakOrder": 0,
             //"MixinConfigs" : "fancymenu.general.mixin.json"
         ])
     }
 }
-
 
 jar.finalizedBy('reobfJar')
 tasks.withType(JavaCompile).configureEach {

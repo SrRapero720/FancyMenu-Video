@@ -15,15 +15,14 @@ public class FmVideoConfigScreen extends ConfigScreen {
     protected void init() {
         super.init();
 
-        for (String s : this.config.getCategorys()) {
+        for (String s: this.config.getCategorys()) {
             this.setCategoryDisplayName(s, Locals.localize("fancymenu.fmvideo.config.categories." + s));
         }
 
-        for (ConfigEntry e : this.config.getAllAsEntry()) {
+        for (ConfigEntry e: this.config.getAllAsEntry()) {
             this.setValueDisplayName(e.getName(), Locals.localize("fancymenu.fmvideo.config." + e.getName()));
             this.setValueDescription(e.getName(), Locals.localize("fancymenu.fmvideo.config." + e.getName() + ".desc"));
         }
 
     }
-
 }

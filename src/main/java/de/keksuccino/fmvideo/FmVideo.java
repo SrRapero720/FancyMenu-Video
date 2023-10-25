@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 @Mod(FmVideo.ID)
 public class FmVideo {
     public static final String ID = "fancymenu_video";
-    public static final String VERSION = "1.0.0";
     public static final Logger LOGGER = LoggerFactory.getLogger(FmVideo.class);
     public static final File MOD_DIR = new File("config/fancymenu/extensions/fmvideo");
     public static Config config;

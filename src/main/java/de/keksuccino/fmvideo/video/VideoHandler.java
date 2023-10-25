@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class VideoHandler {
-
-    protected static Map<String, VideoRenderer> renderers = new HashMap<>();
+    protected final static Map<String, VideoRenderer> renderers = new HashMap<>();
 
     public static VideoRenderer getRenderer(String videoPathOrLink) {
         if (!renderers.containsKey(videoPathOrLink)) {

@@ -35,7 +35,6 @@ public class VideoRenderer {
         } else {
             LOGGER.error(IT, "ERROR: Unable to initialize player for media: " + this.mediaPath);
         }
-
     }
 
     public void render(PoseStack matrix, int posX, int posY, int width, int height) {

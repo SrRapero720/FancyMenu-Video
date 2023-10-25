@@ -12,49 +12,36 @@ import java.io.File;
 import java.util.List;
 
 public class VideoVolumeHandler {
-
     protected static final File PROPS_FILE = new File(FmVideo.MOD_DIR.getPath() + "/video_volume.properties");
-
     protected static int volume = 100;
 
     public static void init() {
-
         try {
-
             if (!PROPS_FILE.isFile()) {
                 PROPS_FILE.createNewFile();
                 writeToFile();
             }
-
             readFromFile();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     protected static void writeToFile() {
-
         try {
-
             PropertiesSet set = new PropertiesSet("video_volume");
             PropertiesSection sec = new PropertiesSection("video_volume");
-            sec.addEntry("volume", "" + volume);
+            sec.addEntry("volume", String.valueOf(volume));
             set.addProperties(sec);
 
             PropertiesSerializer.writeProperties(set, PROPS_FILE.getPath());
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
-    protected  static void readFromFile() {
-
+    protected static void readFromFile() {
         try {
-
             PropertiesSet set = PropertiesSerializer.getProperties(PROPS_FILE.getPath());
             if (set != null) {
                 List<PropertiesSection> secs = set.getPropertiesOfType("video_volume");
@@ -70,7 +57,6 @@ public class VideoVolumeHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -93,17 +79,10 @@ public class VideoVolumeHandler {
     /**
      * Value between 0% and 100%
      */
-    public static int getVolume() {
-        return volume;
-    }
-
-    public static void updateVolume() {
-        setVolume(getVolume());
-    }
-
+    public static int getVolume() { return volume; }
+    public static void updateVolume() { setVolume(getVolume()); }
     public static void updateRendererVolume(VideoRenderer renderer) {
-
-        int newVol = renderer.getVolume();
+        int newVol;
 
         int baseVol = renderer.baseVolume; //100% for volume handler
         double baseVolPercent = ((double)baseVol) / 100.0D;
@@ -116,9 +95,7 @@ public class VideoVolumeHandler {
         } else {
             newVol = newVolTemp;
         }
-
         renderer.setVolume(newVol);
-
     }
 
 }
