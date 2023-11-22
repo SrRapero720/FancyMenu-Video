@@ -4,6 +4,7 @@ import de.keksuccino.fancymenu.api.background.MenuBackground;
 import de.keksuccino.fancymenu.api.background.MenuBackgroundType;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.content.BackgroundOptionsPopup;
+import de.keksuccino.fmvideo.FmVideo;
 import de.keksuccino.fmvideo.popup.SetVideoPopup;
 import de.keksuccino.fmvideo.util.VideoUtils;
 import de.keksuccino.konkrete.gui.screens.popup.PopupHandler;
@@ -18,7 +19,7 @@ import java.util.List;
 public class VideoBackgroundType extends MenuBackgroundType {
 
     public VideoBackgroundType() {
-        super("fancymenu_extension:video_background");
+        super(FmVideo.ID + ":video_background");
     }
 
     @Override
