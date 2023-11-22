@@ -4,6 +4,7 @@ import de.keksuccino.fancymenu.api.item.CustomizationItem;
 import de.keksuccino.fancymenu.api.item.CustomizationItemContainer;
 import de.keksuccino.fancymenu.api.item.LayoutEditorElement;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
+import de.keksuccino.fmvideo.FmVideo;
 import de.keksuccino.konkrete.input.StringUtils;
 import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.properties.PropertiesSection;
@@ -11,7 +12,7 @@ import de.keksuccino.konkrete.properties.PropertiesSection;
 public class VideoCustomizationItemContainer extends CustomizationItemContainer {
 
     public VideoCustomizationItemContainer() {
-        super("fancymenu_extension:video_item");
+        super(FmVideo.ID + ":video_item");
     }
 
     @Override

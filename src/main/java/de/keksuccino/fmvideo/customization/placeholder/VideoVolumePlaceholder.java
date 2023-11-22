@@ -1,6 +1,7 @@
 package de.keksuccino.fmvideo.customization.placeholder;
 
 import de.keksuccino.fancymenu.api.placeholder.PlaceholderTextContainer;
+import de.keksuccino.fmvideo.FmVideo;
 import de.keksuccino.fmvideo.video.VideoVolumeHandler;
 import de.keksuccino.konkrete.input.StringUtils;
 import de.keksuccino.konkrete.localization.Locals;
@@ -8,7 +9,7 @@ import de.keksuccino.konkrete.localization.Locals;
 public class VideoVolumePlaceholder extends PlaceholderTextContainer {
 
     public VideoVolumePlaceholder() {
-        super("fancymenu_extension:video_placeholder:videovolume");
+        super(FmVideo.ID + ":video_placeholder:videovolume");
     }
 
     @Override
