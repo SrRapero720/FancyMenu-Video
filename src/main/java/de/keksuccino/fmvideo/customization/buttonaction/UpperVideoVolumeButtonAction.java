@@ -1,7 +1,6 @@
 package de.keksuccino.fmvideo.customization.buttonaction;
 
 import de.keksuccino.fancymenu.api.buttonaction.ButtonActionContainer;
-import de.keksuccino.fmvideo.FmVideo;
 import de.keksuccino.fmvideo.video.VideoVolumeHandler;
 import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.math.MathUtils;
@@ -9,7 +8,7 @@ import de.keksuccino.konkrete.math.MathUtils;
 public class UpperVideoVolumeButtonAction extends ButtonActionContainer {
 
     public UpperVideoVolumeButtonAction() {
-        super(FmVideo.ID + ":video_buttonaction:upper_volume");
+        super("fancymenu_extension:video_buttonaction:upper_volume");
     }
 
     @Override
