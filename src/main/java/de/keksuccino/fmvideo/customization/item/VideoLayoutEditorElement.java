@@ -1,5 +1,6 @@
 package de.keksuccino.fmvideo.customization.item;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import de.keksuccino.fancymenu.api.item.CustomizationItem;
 import de.keksuccino.fancymenu.api.item.CustomizationItemContainer;
 import de.keksuccino.fancymenu.api.item.LayoutEditorElement;
@@ -15,10 +16,10 @@ import de.keksuccino.konkrete.input.StringUtils;
 import de.keksuccino.konkrete.localization.Locals;
 import de.keksuccino.konkrete.math.MathUtils;
 import de.keksuccino.konkrete.properties.PropertiesSection;
-import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.io.File;
 
 public class VideoLayoutEditorElement extends LayoutEditorElement {
 
@@ -51,7 +52,7 @@ public class VideoLayoutEditorElement extends LayoutEditorElement {
                         if ((local != null) && local.equalsIgnoreCase("false")) {
                             i.isLocal = false;
                         }
-                        i.renderer = VideoHandler.getRenderer(i.mediaPathLink);
+                        i.renderer = VideoHandler.getRenderer(i.isLocal ? new File(i.mediaPathLink).getAbsolutePath() : i.mediaPathLink);
                         if (i.renderer != null) {
                             i.renderer.setTime(0L);
                         }

@@ -8,6 +8,7 @@ import de.keksuccino.konkrete.properties.PropertiesSection;
 import de.keksuccino.konkrete.properties.PropertiesSet;
 import net.minecraft.client.gui.GuiScreen;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,16 +57,18 @@ public class VideoUtils {
                                     if (value != null) {
                                         PropertiesSection videoProps = readValueString(value);
                                         String videoPathLink = videoProps.getEntryValue("video");
+                                        boolean isLocal = Boolean.parseBoolean(videoProps.getEntryValue("islocal"));
                                         if (videoPathLink != null) {
-                                            l.add(VideoHandler.getRenderer(videoPathLink));
+                                            l.add(VideoHandler.getRenderer(isLocal ? new File(videoPathLink).getAbsolutePath() : videoPathLink));
                                         }
                                     }
                                 }
                             }
                             if (action.equalsIgnoreCase("custom_layout_element:fancymenu_extension:video_item")) {
                                 String videoPathLink = sec.getEntryValue("video");
+                                boolean islocal = Boolean.parseBoolean(sec.getEntryValue("islocal"));
                                 if (videoPathLink != null) {
-                                    l.add(VideoHandler.getRenderer(videoPathLink));
+                                    l.add(VideoHandler.getRenderer(islocal ? new File(videoPathLink).getAbsolutePath() : videoPathLink));
                                 }
                             }
                         }

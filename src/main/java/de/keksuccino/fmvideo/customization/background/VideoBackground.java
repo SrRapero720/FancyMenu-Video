@@ -10,6 +10,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 
 import java.awt.*;
+import java.io.File;
 
 import static de.keksuccino.fmvideo.FmVideo.LOGGER;
 
@@ -25,8 +26,8 @@ public class VideoBackground extends MenuBackground {
 
     public VideoBackground(MenuBackgroundType type, String videoPath, boolean isLocal) {
         super("", type);
-        this.renderer = VideoHandler.getRenderer(videoPath);
         this.isLocal = isLocal;
+        this.renderer = VideoHandler.getRenderer(isLocal ? new File(videoPath).getAbsolutePath() : videoPath);
     }
 
     @Override
