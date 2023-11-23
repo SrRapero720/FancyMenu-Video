@@ -80,9 +80,9 @@ def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
 def replaceProperties = [
         minecraft_version: mcversion, minecraft_version_range: mcrange,
         forge_version: fgversion, forge_version_range: fgrange,
-        loader_version_range: fgrange,
+        loader_version_range: loaderrange,
         mod_id: modid, mod_name: modname, mod_license: modlicense, mod_version: modversion,
-        mod_authors: modauthor, mod_description: mod_description,
+        mod_authors: modauthor, mod_description: moddescription,
         watermedia_version_range: watermediarange, fancymenu_version_range: fancymenurange
 ]
 
