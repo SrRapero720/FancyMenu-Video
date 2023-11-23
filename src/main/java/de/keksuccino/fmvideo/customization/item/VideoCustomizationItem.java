@@ -43,7 +43,7 @@ public class VideoCustomizationItem extends CustomizationItem {
             if (this.isLocal) {
                 File f = new File(this.mediaPathLink);
                 if (f.isFile()) {
-                    this.renderer = VideoHandler.getRenderer(this.mediaPathLink);
+                    this.renderer = VideoHandler.getRenderer(f.getAbsolutePath());
                 }
             } else {
                 if (UrlUtils.isValidUrl(this.mediaPathLink)) {

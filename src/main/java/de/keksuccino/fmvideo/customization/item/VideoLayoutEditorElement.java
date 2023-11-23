@@ -19,6 +19,7 @@ import de.keksuccino.konkrete.properties.PropertiesSection;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.io.File;
 
 public class VideoLayoutEditorElement extends LayoutEditorElement {
 
@@ -52,7 +53,7 @@ public class VideoLayoutEditorElement extends LayoutEditorElement {
                             if ((local != null) && local.equalsIgnoreCase("false")) {
                                 i.isLocal = false;
                             }
-                            i.renderer = VideoHandler.getRenderer(i.mediaPathLink);
+                            i.renderer = VideoHandler.getRenderer(i.isLocal ? new File(i.mediaPathLink).getAbsolutePath() : i.mediaPathLink);
                             if (i.renderer != null) {
                                 i.renderer.setTime(0L);
                             }
