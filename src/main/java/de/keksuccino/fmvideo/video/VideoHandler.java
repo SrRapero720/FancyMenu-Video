@@ -1,5 +1,6 @@
 package de.keksuccino.fmvideo.video;
 
+import de.keksuccino.fmvideo.FmVideo;
 import me.srrapero720.watermedia.api.url.UrlAPI;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class VideoHandler {
         if (!renderers.containsKey(videoPathOrLink)) {
             String resultingUrl = !UrlAPI.isValid(videoPathOrLink) ? ("file:///" + videoPathOrLink) : videoPathOrLink;
             if (!UrlAPI.isValid(resultingUrl)) resultingUrl = videoPathOrLink; // IF WASN'T VALID YET MEAN IT WAS BROKEN
+            FmVideo.LOGGER.debug(resultingUrl);
             renderers.put(videoPathOrLink, new VideoRenderer(resultingUrl));
         }
         return renderers.get(videoPathOrLink);

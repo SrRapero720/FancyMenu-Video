@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.awt.*;
+import java.io.File;
 
 public class VideoBackground extends MenuBackground {
 
@@ -24,8 +25,8 @@ public class VideoBackground extends MenuBackground {
 
     public VideoBackground(MenuBackgroundType type, String videoPath, boolean isLocal) {
         super("", type);
-        this.renderer = VideoHandler.getRenderer(videoPath);
         this.isLocal = isLocal;
+        this.renderer = VideoHandler.getRenderer(isLocal ? new File(videoPath).getAbsolutePath() : videoPath);
     }
 
     @Override
